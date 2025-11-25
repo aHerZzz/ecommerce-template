@@ -2,12 +2,16 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { fetchProducts } from '../services/products';
 import { StorefrontApp } from '../components/StorefrontApp';
+import { storeSettings } from '../config/store';
 
 const productList = await fetchProducts();
 ---
-<BaseLayout title="Storefront" description="Catálogo de productos">
+<BaseLayout title={storeSettings.branding.storeName} description={storeSettings.branding.tagline}>
   <section class="flex flex-col gap-6">
-    <h1 class="text-3xl font-bold">Novedades</h1>
+    <div class="space-y-1">
+      <h1 class="text-3xl font-bold">{storeSettings.branding.storeName}</h1>
+      <p class="text-slate-600">{storeSettings.branding.tagline}</p>
+    </div>
     <StorefrontApp client:load products={productList} />
   </section>
 </BaseLayout>

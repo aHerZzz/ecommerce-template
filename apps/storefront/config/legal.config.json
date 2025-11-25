@@ -1,9 +1,23 @@
 {
   "legalPages": [
-    { "slug": "terminos", "title": "Términos y condiciones" },
-    { "slug": "privacidad", "title": "Política de privacidad" },
-    { "slug": "cookies", "title": "Política de cookies" }
+    {
+      "slug": "terminos",
+      "title": "Términos y condiciones",
+      "body": "Estos términos describen las reglas básicas de compra, devoluciones y atención al cliente. Ajusta este texto con los datos de tu negocio y las condiciones aplicables."
+    },
+    {
+      "slug": "privacidad",
+      "title": "Política de privacidad",
+      "body": "Explica cómo recoges, utilizas y proteges los datos personales de tus clientes. Incluye información sobre bases legales, conservación de datos y derechos de acceso."
+    },
+    {
+      "slug": "cookies",
+      "title": "Política de cookies",
+      "body": "Detalla las cookies técnicas, analíticas o de marketing que usas, su finalidad y cómo los usuarios pueden gestionarlas desde el navegador o tu panel de preferencias."
+    }
   ],
   "company": "Ecommerce Template S.L.",
-  "year": 2024
+  "year": 2024,
+  "contactEmail": "legal@ecommerce-template.test",
+  "registeredAddress": "Calle Demo 123, Madrid, España"
 }

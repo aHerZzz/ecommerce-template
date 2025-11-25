@@ -3,6 +3,7 @@ import { useCart } from './CartContext';
 import { useWishlist } from '../hooks/useWishlist';
 import type { Product } from '../data/products';
 import { t } from '../i18n/config';
+import { formatPrice, storeSettings } from '../config/store';
 
 const locale = t;
 
@@ -101,7 +102,10 @@ export function ProductGrid({ products }: Props) {
               </div>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-lg font-bold">€{product.price.toFixed(2)}</p>
+                  <p className="text-lg font-bold">{formatPrice(product.price)}</p>
+                  <p className="text-xs text-slate-500">
+                    IVA {storeSettings.tax.ivaPercent}% incluido
+                  </p>
                   {firstVariant && (
                     <p className="text-xs text-slate-500">
                       {locale('variants')}: {firstVariant.name} ({firstVariant.sku})

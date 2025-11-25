@@ -2,11 +2,9 @@ import React, { useMemo, useState } from 'react';
 import { useCart } from './CartContext';
 import { createCheckoutSession } from '../services/stripe';
 import { t } from '../i18n/config';
+import { formatPrice, storeSettings, vatRateDecimal } from '../config/store';
 
 const locale = t;
-
-const SHIPPING = 4.99;
-const VAT_RATE = 0.21;
 
 export function CartSummary() {
   const { items, updateQuantity, removeItem } = useCart();
@@ -14,9 +12,13 @@ export function CartSummary() {
 
   const totals = useMemo(() => {
     const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const vat = subtotal * VAT_RATE;
-    const total = subtotal + vat + (items.length > 0 ? SHIPPING : 0);
-    return { subtotal, vat, total };
+    const vat = subtotal * vatRateDecimal;
+    const shippingBase = storeSettings.shipping.baseCost;
+    const hasItems = items.length > 0;
+    const isFreeShipping = hasItems && subtotal >= storeSettings.shipping.freeShippingFrom;
+    const shipping = hasItems ? (isFreeShipping ? 0 : shippingBase) : 0;
+    const total = subtotal + vat + shipping;
+    return { subtotal, vat, total, shipping, isFreeShipping };
   }, [items]);
 
   const handleCheckout = async () => {
@@ -49,26 +51,32 @@ export function CartSummary() {
                 </button>
               </div>
             </div>
-            <p className="font-semibold">€{(item.price * item.quantity).toFixed(2)}</p>
+            <p className="font-semibold">{formatPrice(item.price * item.quantity)}</p>
           </div>
         ))}
       </div>
       <div className="bg-white rounded-xl p-4 shadow-sm">
         <div className="flex justify-between text-sm mb-1">
           <span>{locale('subtotal')}</span>
-          <span>€{totals.subtotal.toFixed(2)}</span>
+          <span>{formatPrice(totals.subtotal)}</span>
         </div>
         <div className="flex justify-between text-sm mb-1">
-          <span>{locale('vat')} (21%)</span>
-          <span>€{totals.vat.toFixed(2)}</span>
+          <span>
+            {locale('vat')} ({storeSettings.tax.ivaPercent}%)
+          </span>
+          <span>{formatPrice(totals.vat)}</span>
         </div>
         <div className="flex justify-between text-sm mb-1">
           <span>{locale('shipping')}</span>
-          <span>€{items.length > 0 ? SHIPPING.toFixed(2) : '0.00'}</span>
+          <span>
+            {totals.isFreeShipping
+              ? `${formatPrice(0)} (gratis desde ${formatPrice(storeSettings.shipping.freeShippingFrom)})`
+              : `${formatPrice(totals.shipping)} · Gratis desde ${formatPrice(storeSettings.shipping.freeShippingFrom)}`}
+          </span>
         </div>
         <div className="flex justify-between font-semibold text-lg">
           <span>{locale('total')}</span>
-          <span>€{totals.total.toFixed(2)}</span>
+          <span>{formatPrice(totals.total)}</span>
         </div>
         <button
           className="mt-4 w-full bg-primary text-white py-3 rounded-lg disabled:opacity-50"
@@ -80,6 +88,10 @@ export function CartSummary() {
         {checkoutUrl && (
           <p className="text-xs text-slate-500 mt-2 break-all">Sesión: {checkoutUrl}</p>
         )}
+        <p className="text-xs text-slate-500 mt-2">
+          Envíos con {storeSettings.shipping.provider} · {storeSettings.shipping.estimatedDelivery}. Métodos:
+          {` ${storeSettings.shipping.methods.join(' · ')}`}
+        </p>
       </div>
     </div>
   );
