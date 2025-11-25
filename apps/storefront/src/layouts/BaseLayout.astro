@@ -4,6 +4,10 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { storeSettings } from '../config/store';
 import { themeSettings } from '../config/theme';
+import CookieBanner from '../components/ui/CookieBanner';
+
+const prefersDark = themeSettings.darkMode?.default === 'dark';
+const prefersSystem = themeSettings.darkMode?.default === 'system';
 
 const { title = storeSettings.branding.storeName, description = storeSettings.branding.tagline } =
   Astro.props;
@@ -26,14 +30,38 @@ const { title = storeSettings.branding.storeName, description = storeSettings.br
           --font-body: ${themeSettings.typography.body};
           --font-heading: ${themeSettings.typography.heading};
         }
+
+        .dark {
+          --color-primary: ${themeSettings.paletteDark?.primary ?? themeSettings.palette.primary};
+          --color-accent: ${themeSettings.paletteDark?.accent ?? themeSettings.palette.accent};
+          --color-background: ${
+            themeSettings.paletteDark?.background ?? themeSettings.palette.background
+          };
+          --color-surface: ${themeSettings.paletteDark?.surface ?? themeSettings.palette.surface};
+          --color-text: ${themeSettings.paletteDark?.text ?? themeSettings.palette.text};
+        }
       `}
     </style>
+    {themeSettings.darkMode?.enabled && (
+      <script>
+        {`(() => {
+            const stored = localStorage.getItem('theme');
+            const prefers = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = stored || ${
+              prefersSystem ? "(prefers ? 'dark' : 'light')" : prefersDark ? "'dark'" : "'light'"
+            };
+            const resolved = theme === 'system' ? (prefers ? 'dark' : 'light') : theme;
+            document.documentElement.classList.toggle('dark', resolved === 'dark');
+          })();`}
+      </script>
+    )}
   </head>
-  <body>
+  <body class="min-h-screen bg-background text-text dark:bg-background-dark dark:text-text-dark">
     <Header />
     <main class="container py-8">
       <slot />
     </main>
     <Footer />
+    <CookieBanner client:load />
   </body>
 </html>

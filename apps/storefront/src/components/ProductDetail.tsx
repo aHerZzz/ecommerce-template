@@ -4,6 +4,8 @@ import { useCart } from './CartContext';
 import { useWishlist } from '../hooks/useWishlist';
 import { t } from '../i18n/config';
 import { formatPrice, storeSettings } from '../config/store';
+import { Button } from './ui/Button';
+import { Card } from './ui/Card';
 
 const locale = t;
 
@@ -29,54 +31,63 @@ export function ProductDetail({ product }: Props) {
       <img
         src={product.image}
         alt={product.name}
-        className="w-full h-80 object-cover rounded-xl shadow"
+        className="h-80 w-full rounded-xl object-cover shadow"
       />
-      <div className="flex flex-col gap-4">
+      <Card as="article" ariaLabel={`Detalle de ${product.name}`} className="flex flex-col gap-4">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-sm text-slate-500">{product.category}</p>
-            <h1 className="text-2xl font-semibold">{product.name}</h1>
+            <p className="text-sm text-slate-500 dark:text-slate-300">{product.category}</p>
+            <h1 className="text-2xl font-semibold text-primary dark:text-text-dark">{product.name}</h1>
           </div>
-          <button
-            className={`px-3 py-2 border rounded-lg text-sm ${inWishlist ? 'bg-primary text-white' : ''}`}
+          <Button
+            variant={inWishlist ? 'primary' : 'secondary'}
+            size="sm"
+            aria-pressed={inWishlist}
+            aria-label={locale('addToWishlist')}
             onClick={() => toggleItem({ id: product.id, name: product.name, image: product.image })}
           >
             ♥ {locale('addToWishlist')}
-          </button>
+          </Button>
         </div>
-        <p className="text-slate-700 leading-relaxed">{product.description}</p>
-        <div className="flex flex-wrap gap-2">
+        <p className="leading-relaxed text-slate-700 dark:text-slate-200">{product.description}</p>
+        <div className="flex flex-wrap gap-2" aria-label="Etiquetas del producto">
           {product.tags.map((tag) => (
-            <span key={tag} className="bg-slate-100 text-slate-700 text-xs px-2 py-1 rounded-full">
+            <span
+              key={tag}
+              className="rounded-full bg-slate-100 px-2 py-1 text-xs text-slate-700 dark:bg-gray-800 dark:text-slate-200"
+            >
               #{tag}
             </span>
           ))}
         </div>
         <div className="flex flex-col gap-2">
-          <span className="font-semibold text-sm">{locale('variants')}</span>
-          <div className="flex gap-2 flex-wrap">
+          <span className="text-sm font-semibold text-primary dark:text-text-dark">{locale('variants')}</span>
+          <div className="flex flex-wrap gap-2">
             {product.variants.map((variant) => (
-              <button
+              <Button
                 key={variant.id}
+                size="sm"
+                variant={selectedVariant?.id === variant.id ? 'primary' : 'secondary'}
+                aria-pressed={selectedVariant?.id === variant.id}
                 onClick={() => setSelectedVariant(variant)}
-                className={`px-3 py-2 rounded-lg border text-sm ${
-                  selectedVariant?.id === variant.id ? 'bg-primary text-white' : 'bg-white'
-                }`}
               >
                 {variant.name}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-3">
           <div>
             <p className="text-3xl font-bold">{formatPrice(price)}</p>
-            <p className="text-xs text-slate-500">IVA {storeSettings.tax.ivaPercent}% incluido</p>
+            <p className="text-xs text-slate-500 dark:text-slate-300">
+              IVA {storeSettings.tax.ivaPercent}% incluido
+            </p>
             {selectedVariant && (
-              <p className="text-xs text-slate-500">SKU: {selectedVariant.sku}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-300">SKU: {selectedVariant.sku}</p>
             )}
           </div>
-          <button
+          <Button
+            size="lg"
             onClick={() =>
               addItem({
                 id: `${product.id}-${selectedVariant?.id ?? 'default'}`,
@@ -86,12 +97,12 @@ export function ProductDetail({ product }: Props) {
                 image: product.image
               })
             }
-            className="px-4 py-3 bg-accent text-white rounded-lg text-sm hover:opacity-90"
+            aria-label={`Añadir ${product.name} al carrito`}
           >
             {locale('addToCart')}
-          </button>
+          </Button>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }
