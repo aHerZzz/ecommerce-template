@@ -1,0 +1,126 @@
+{
+  "regions": [
+    {
+      "name": "EU",
+      "currency_code": "eur",
+      "tax_rate": 0,
+      "payment_providers": ["manual"],
+      "countries": ["de", "fr", "es"]
+    }
+  ],
+  "shipping_options": [
+    {
+      "name": "Envío estándar",
+      "amount": 800,
+      "admin_only": false,
+      "region_name": "EU",
+      "provider_id": "manual",
+      "data": {},
+      "requirements": []
+    },
+    {
+      "name": "Recogida en tienda",
+      "amount": 0,
+      "admin_only": false,
+      "region_name": "EU",
+      "provider_id": "manual",
+      "data": {},
+      "requirements": []
+    }
+  ],
+  "product_categories": [
+    {
+      "name": "Moda",
+      "handle": "moda"
+    },
+    {
+      "name": "Accesorios",
+      "handle": "accesorios"
+    }
+  ],
+  "products": [
+    {
+      "title": "Camiseta básica",
+      "subtitle": "Perfecta para el día a día",
+      "description": "Camiseta de algodón orgánico con corte unisex.",
+      "type": { "value": "top" },
+      "collection_handle": "coleccion-principal",
+      "tags": ["algodon", "basico"],
+      "images": ["https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-black-front.png"],
+      "options": [
+        { "title": "Talla", "values": ["S", "M", "L"] },
+        { "title": "Color", "values": ["Negro", "Blanco"] }
+      ],
+      "variants": [
+        {
+          "title": "S / Negro",
+          "prices": [
+            { "amount": 2500, "currency_code": "eur" }
+          ],
+          "options": { "Talla": "S", "Color": "Negro" }
+        },
+        {
+          "title": "M / Blanco",
+          "prices": [
+            { "amount": 2500, "currency_code": "eur" }
+          ],
+          "options": { "Talla": "M", "Color": "Blanco" }
+        }
+      ],
+      "categories": ["moda"]
+    },
+    {
+      "title": "Bolso de cuero",
+      "subtitle": "Fabricado en Europa",
+      "description": "Bolso de cuero con bolsillos internos y correa ajustable.",
+      "type": { "value": "bag" },
+      "collection_handle": "coleccion-principal",
+      "tags": ["cuero", "premium"],
+      "images": ["https://medusa-public-images.s3.eu-west-1.amazonaws.com/black-bag.png"],
+      "options": [
+        { "title": "Color", "values": ["Marrón", "Negro"] }
+      ],
+      "variants": [
+        {
+          "title": "Marrón",
+          "prices": [
+            { "amount": 8500, "currency_code": "eur" }
+          ],
+          "options": { "Color": "Marrón" }
+        },
+        {
+          "title": "Negro",
+          "prices": [
+            { "amount": 8500, "currency_code": "eur" }
+          ],
+          "options": { "Color": "Negro" }
+        }
+      ],
+      "categories": ["accesorios"]
+    }
+  ],
+  "discounts": [
+    {
+      "code": "BIENVENIDA10",
+      "rule": {
+        "type": "percentage",
+        "value": 10,
+        "allocation": "total"
+      },
+      "is_dynamic": false,
+      "is_disabled": false,
+      "regions": ["EU"]
+    },
+    {
+      "code": "ENVIOGRATIS",
+      "rule": {
+        "type": "free_shipping",
+        "value": 0,
+        "allocation": "total"
+      },
+      "is_dynamic": false,
+      "is_disabled": false,
+      "regions": ["EU"]
+    }
+  ]
+}
