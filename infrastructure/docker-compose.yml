@@ -1,0 +1,56 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: medusa-db
+    environment:
+      POSTGRES_USER: medusa
+      POSTGRES_PASSWORD: medusa
+      POSTGRES_DB: medusa
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U medusa"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: medusa-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    image: node:20-alpine
+    container_name: medusa-backend
+    working_dir: /app
+    volumes:
+      - ../apps/backend:/app
+    environment:
+      PORT: 9000
+      DATABASE_URL: postgres://medusa:medusa@db:5432/medusa
+      REDIS_URL: redis://redis:6379
+      STORE_CORS: http://localhost:4321
+      ADMIN_CORS: http://localhost:7000
+      JWT_SECRET: supersecret
+      COOKIE_SECRET: supersecret
+    command: sh -c "npm install && npm run dev"
+    ports:
+      - "9000:9000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  db-data:
