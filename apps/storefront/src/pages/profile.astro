@@ -1,0 +1,10 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { ProfileApp } from '../components/ProfileApp';
+---
+<BaseLayout title="Mi cuenta" description="Gestiona tus datos">
+  <section class="flex flex-col gap-4">
+    <h1 class="text-2xl font-bold">Mi cuenta</h1>
+    <ProfileApp client:load />
+  </section>
+</BaseLayout>

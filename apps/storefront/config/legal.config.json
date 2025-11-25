@@ -1,0 +1,9 @@
+{
+  "legalPages": [
+    { "slug": "terminos", "title": "Términos y condiciones" },
+    { "slug": "privacidad", "title": "Política de privacidad" },
+    { "slug": "cookies", "title": "Política de cookies" }
+  ],
+  "company": "Ecommerce Template S.L.",
+  "year": 2024
+}

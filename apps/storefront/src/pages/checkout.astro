@@ -1,0 +1,11 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { CartApp } from '../components/CartApp';
+---
+<BaseLayout title="Checkout" description="Completa tu compra">
+  <section class="flex flex-col gap-4">
+    <h1 class="text-2xl font-bold">Checkout</h1>
+    <p class="text-slate-600">Revisa el desglose de IVA y costes de envío antes de continuar.</p>
+    <CartApp client:load />
+  </section>
+</BaseLayout>

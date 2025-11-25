@@ -1,0 +1,14 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import legalConfig from '../../../config/legal.config.json';
+
+const { slug } = Astro.params;
+const page = legalConfig.legalPages.find((entry) => entry.slug === slug);
+const body = `Contenido legal para ${page?.title ?? slug}. Actualiza este texto con la información oficial.`;
+---
+<BaseLayout title={page?.title ?? 'Legal'}>
+  <section class="prose max-w-none">
+    <h1>{page?.title ?? 'Legal'}</h1>
+    <p>{body}</p>
+  </section>
+</BaseLayout>
