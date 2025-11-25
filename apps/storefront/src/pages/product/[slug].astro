@@ -1,0 +1,15 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { fetchProduct } from '../../services/products';
+import { ProductDetailApp } from '../../components/ProductDetailApp';
+
+const { slug } = Astro.params;
+const product = await fetchProduct(slug as string);
+---
+<BaseLayout title={product?.name ?? 'Producto'} description={product?.description}>
+  {product ? (
+    <ProductDetailApp client:load product={product} />
+  ) : (
+    <p class="text-slate-600">Producto no encontrado.</p>
+  )}
+</BaseLayout>
