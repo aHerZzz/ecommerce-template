@@ -31,7 +31,7 @@ if (STRIPE_SECRET_KEY) {
   }
 
   plugins.push({
-    resolve: "@medusajs/medusa-payment-stripe",
+    resolve: "medusa-payment-stripe",
     options: stripeOptions,
   });
 } else {
