@@ -17,7 +17,7 @@
   "dependencies": {
     "@medusajs/medusa": "^1.11.0",
     "@medusajs/medusa-cli": "^1.11.0",
-    "@medusajs/medusa-payment-stripe": "^10.2.0",
+    "medusa-payment-stripe": "^10.2.0",
     "dotenv": "^16.4.5",
     "pg": "^8.11.5",
     "redis": "^4.6.14",
