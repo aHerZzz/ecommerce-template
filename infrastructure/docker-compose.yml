@@ -43,6 +43,8 @@ services:
       ADMIN_CORS: http://localhost:7000
       JWT_SECRET: supersecret
       COOKIE_SECRET: supersecret
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
     command: sh -c "npm install && npm run dev"
     ports:
       - "9000:9000"
