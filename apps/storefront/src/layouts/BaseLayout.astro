@@ -9,50 +9,53 @@ import CookieBanner from '../components/ui/CookieBanner';
 const prefersDark = themeSettings.darkMode?.default === 'dark';
 const prefersSystem = themeSettings.darkMode?.default === 'system';
 
+const rootStyle = `
+  --color-primary: ${themeSettings.palette.primary};
+  --color-accent: ${themeSettings.palette.accent};
+  --color-background: ${themeSettings.palette.background};
+  --color-surface: ${themeSettings.palette.surface};
+  --color-text: ${themeSettings.palette.text};
+  --font-body: ${themeSettings.typography.body};
+  --font-heading: ${themeSettings.typography.heading};
+`;
+
+const darkStyles = `
+  .dark {
+    --color-primary: ${themeSettings.paletteDark?.primary ?? themeSettings.palette.primary};
+    --color-accent: ${themeSettings.paletteDark?.accent ?? themeSettings.palette.accent};
+    --color-background: ${
+      themeSettings.paletteDark?.background ?? themeSettings.palette.background
+    };
+    --color-surface: ${themeSettings.paletteDark?.surface ?? themeSettings.palette.surface};
+    --color-text: ${themeSettings.paletteDark?.text ?? themeSettings.palette.text};
+  }
+`;
+
+const themeScript = `(() => {
+  const prefersSystem = ${prefersSystem ? 'true' : 'false'};
+  const prefersDark = ${prefersDark ? 'true' : 'false'};
+  const stored = localStorage.getItem('theme');
+  const prefers = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const theme = stored || (prefersSystem ? (prefers ? 'dark' : 'light') : prefersDark ? 'dark' : 'light');
+  const resolved = theme === 'system' ? (prefers ? 'dark' : 'light') : theme;
+  document.documentElement.classList.toggle('dark', resolved === 'dark');
+})();`;
+
 const { title = storeSettings.branding.storeName, description = storeSettings.branding.tagline } =
   Astro.props;
 ---
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" style={rootStyle}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="icon" type="image/png" href={themeSettings.logos.favicon} />
-    <style>
-      {` :root {
-          --color-primary: ${themeSettings.palette.primary};
-          --color-accent: ${themeSettings.palette.accent};
-          --color-background: ${themeSettings.palette.background};
-          --color-surface: ${themeSettings.palette.surface};
-          --color-text: ${themeSettings.palette.text};
-          --font-body: ${themeSettings.typography.body};
-          --font-heading: ${themeSettings.typography.heading};
-        }
-
-        .dark {
-          --color-primary: ${themeSettings.paletteDark?.primary ?? themeSettings.palette.primary};
-          --color-accent: ${themeSettings.paletteDark?.accent ?? themeSettings.palette.accent};
-          --color-background: ${
-            themeSettings.paletteDark?.background ?? themeSettings.palette.background
-          };
-          --color-surface: ${themeSettings.paletteDark?.surface ?? themeSettings.palette.surface};
-          --color-text: ${themeSettings.paletteDark?.text ?? themeSettings.palette.text};
-        }
-      `}
-    </style>
+    <style is:global set:html={darkStyles}></style>
     {themeSettings.darkMode?.enabled && (
       <script>
-        {`(() => {
-            const stored = localStorage.getItem('theme');
-            const prefers = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const theme = stored || ${
-              prefersSystem ? "(prefers ? 'dark' : 'light')" : prefersDark ? "'dark'" : "'light'"
-            };
-            const resolved = theme === 'system' ? (prefers ? 'dark' : 'light') : theme;
-            document.documentElement.classList.toggle('dark', resolved === 'dark');
-          })();`}
+        {themeScript}
       </script>
     )}
   </head>
