@@ -1,0 +1,18 @@
+{
+  "palette": {
+    "primary": "#0f172a",
+    "accent": "#0ea5e9",
+    "background": "#f8fafc",
+    "surface": "#ffffff",
+    "text": "#0f172a"
+  },
+  "typography": {
+    "heading": "'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+    "body": "'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+  },
+  "logos": {
+    "main": "https://dummyimage.com/180x40/0f172a/ffffff&text=Ecommerce+Template",
+    "square": "https://dummyimage.com/64x64/0f172a/ffffff&text=ET",
+    "favicon": "https://dummyimage.com/32x32/0f172a/ffffff&text=ET"
+  }
+}

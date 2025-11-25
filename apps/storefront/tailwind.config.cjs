@@ -1,3 +1,5 @@
+const themeConfig = require('./config/theme.config.json');
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -8,8 +10,11 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: '#0f172a',
-        accent: '#0ea5e9'
+        primary: themeConfig.palette.primary,
+        accent: themeConfig.palette.accent,
+        background: themeConfig.palette.background,
+        surface: themeConfig.palette.surface,
+        text: themeConfig.palette.text
       }
     }
   },

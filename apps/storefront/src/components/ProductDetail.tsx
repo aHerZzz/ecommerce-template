@@ -3,6 +3,7 @@ import type { Product, ProductVariant } from '../data/products';
 import { useCart } from './CartContext';
 import { useWishlist } from '../hooks/useWishlist';
 import { t } from '../i18n/config';
+import { formatPrice, storeSettings } from '../config/store';
 
 const locale = t;
 
@@ -69,7 +70,8 @@ export function ProductDetail({ product }: Props) {
         </div>
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-3xl font-bold">€{price.toFixed(2)}</p>
+            <p className="text-3xl font-bold">{formatPrice(price)}</p>
+            <p className="text-xs text-slate-500">IVA {storeSettings.tax.ivaPercent}% incluido</p>
             {selectedVariant && (
               <p className="text-xs text-slate-500">SKU: {selectedVariant.sku}</p>
             )}

@@ -1,0 +1,24 @@
+{
+  "branding": {
+    "storeName": "Ecommerce Template",
+    "tagline": "Plantilla lista para personalizar"
+  },
+  "currency": {
+    "code": "EUR",
+    "symbol": "€",
+    "locale": "es-ES"
+  },
+  "tax": {
+    "ivaPercent": 21
+  },
+  "shipping": {
+    "provider": "Correos Express",
+    "baseCost": 4.99,
+    "freeShippingFrom": 60,
+    "estimatedDelivery": "24-48h",
+    "methods": [
+      "Envío estándar",
+      "Recogida en tienda"
+    ]
+  }
+}
