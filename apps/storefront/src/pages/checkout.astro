@@ -1,11 +1,20 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { CartApp } from '../components/CartApp';
+import { CheckoutForm } from '../components/CheckoutForm';
 ---
 <BaseLayout title="Checkout" description="Completa tu compra">
-  <section class="flex flex-col gap-4">
-    <h1 class="text-2xl font-bold">Checkout</h1>
-    <p class="text-slate-600">Revisa el desglose de IVA y costes de envío antes de continuar.</p>
-    <CartApp client:load />
+  <section class="flex flex-col gap-6">
+    <div class="space-y-2">
+      <h1 class="text-2xl font-bold">Checkout</h1>
+      <p class="text-slate-600 dark:text-slate-300">
+        Revisa el desglose de IVA y costes de envío antes de continuar. Añade tus datos personales y acepta el aviso de
+        privacidad RGPD para procesar el pedido.
+      </p>
+    </div>
+    <div class="grid gap-6 lg:grid-cols-2">
+      <CheckoutForm client:load />
+      <CartApp client:load />
+    </div>
   </section>
 </BaseLayout>

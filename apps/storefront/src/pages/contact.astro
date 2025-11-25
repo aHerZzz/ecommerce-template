@@ -1,0 +1,15 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { ContactForm } from '../components/ContactForm';
+---
+<BaseLayout title="Contacto" description="Envíanos tu consulta">
+  <section class="flex flex-col gap-4">
+    <div class="space-y-1">
+      <h1 class="text-2xl font-bold">Contacto</h1>
+      <p class="text-slate-600 dark:text-slate-300">
+        Rellena el formulario para solicitar información o ejercer tus derechos sobre los datos.
+      </p>
+    </div>
+    <ContactForm client:load />
+  </section>
+</BaseLayout>

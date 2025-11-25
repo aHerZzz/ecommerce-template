@@ -3,6 +3,8 @@ import { useCart } from './CartContext';
 import { createCheckoutSession } from '../services/stripe';
 import { t } from '../i18n/config';
 import { formatPrice, storeSettings, vatRateDecimal } from '../config/store';
+import { Card } from './ui/Card';
+import { Button } from './ui/Button';
 
 const locale = t;
 
@@ -30,13 +32,13 @@ export function CartSummary() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-3 bg-white rounded-xl p-4 shadow-sm">
+      <Card className="flex flex-col gap-3" ariaLabel="Resumen de carrito">
         {items.length === 0 && <p className="text-slate-500 text-sm">No hay productos en el carrito.</p>}
         {items.map((item) => (
           <div key={item.id} className="flex items-center gap-3">
-            {item.image && <img src={item.image} alt={item.name} className="w-16 h-16 rounded" />}
+            {item.image && <img src={item.image} alt={item.name} className="h-16 w-16 rounded object-cover" />}
             <div className="flex-1">
-              <p className="font-semibold">{item.name}</p>
+              <p className="font-semibold text-primary dark:text-text-dark">{item.name}</p>
               {item.variant && <p className="text-xs text-slate-500">{item.variant}</p>}
               <div className="flex items-center gap-2 text-sm mt-1">
                 <input
@@ -44,18 +46,18 @@ export function CartSummary() {
                   min={1}
                   value={item.quantity}
                   onChange={(e) => updateQuantity(item.id, Number(e.target.value))}
-                  className="w-16 border rounded px-2 py-1"
+                  className="w-16 rounded border border-gray-200 px-2 py-1 text-slate-800 focus-visible:outline-none focus-visible:ring dark:border-gray-700 dark:bg-surface-dark dark:text-text-dark"
                 />
-                <button onClick={() => removeItem(item.id)} className="text-red-500 text-xs">
+                <Button variant="ghost" size="sm" onClick={() => removeItem(item.id)} aria-label="Quitar producto">
                   Quitar
-                </button>
+                </Button>
               </div>
             </div>
             <p className="font-semibold">{formatPrice(item.price * item.quantity)}</p>
           </div>
         ))}
-      </div>
-      <div className="bg-white rounded-xl p-4 shadow-sm">
+      </Card>
+      <Card ariaLabel="Totales de compra">
         <div className="flex justify-between text-sm mb-1">
           <span>{locale('subtotal')}</span>
           <span>{formatPrice(totals.subtotal)}</span>
@@ -78,21 +80,17 @@ export function CartSummary() {
           <span>{locale('total')}</span>
           <span>{formatPrice(totals.total)}</span>
         </div>
-        <button
-          className="mt-4 w-full bg-primary text-white py-3 rounded-lg disabled:opacity-50"
-          onClick={handleCheckout}
-          disabled={items.length === 0}
-        >
+        <Button className="mt-4 w-full" onClick={handleCheckout} disabled={items.length === 0} aria-disabled={items.length === 0}>
           {locale('checkout')}
-        </button>
+        </Button>
         {checkoutUrl && (
           <p className="text-xs text-slate-500 mt-2 break-all">Sesión: {checkoutUrl}</p>
         )}
-        <p className="text-xs text-slate-500 mt-2">
+        <p className="text-xs text-slate-500 dark:text-slate-300 mt-2">
           Envíos con {storeSettings.shipping.provider} · {storeSettings.shipping.estimatedDelivery}. Métodos:
           {` ${storeSettings.shipping.methods.join(' · ')}`}
         </p>
-      </div>
+      </Card>
     </div>
   );
 }
