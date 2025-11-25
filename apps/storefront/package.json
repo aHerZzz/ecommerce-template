@@ -9,7 +9,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "lint": "astro check"
+    "lint": "astro check",
+    "services": "docker compose -f ../../infrastructure/docker-compose.yml up -d backend"
   },
   "dependencies": {
     "@astrojs/react": "^3.0.0",
