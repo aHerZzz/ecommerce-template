@@ -6,10 +6,12 @@ import { Modules } from "@medusajs/utils";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const envFileName = process.env.MEDUSA_ENV
+  ? `.env.${process.env.MEDUSA_ENV}`
+  : ".env";
+
 dotenv.config({
-  path: process.env.MEDUSA_ENV
-    ? `.env.${process.env.MEDUSA_ENV}`
-    : path.join(process.cwd(), ".env"),
+  path: path.join(__dirname, envFileName),
 });
 
 type Config = {
