@@ -11,7 +11,7 @@ Plantilla de monorepo para tiendas basadas en Medusa con storefront Astro. Inclu
 
 ## Requisitos
 
-- Node.js 20+ y npm.
+- Node.js 20+ con pnpm (se recomienda habilitar Corepack para gestionarlo automáticamente). npm puede funcionar como alternativa.
 - Docker y Docker Compose (para levantar la infraestructura local o desarrollo con contenedores).
 - Stripe (clave secreta) si se quiere probar el plugin de pagos.
 
@@ -33,8 +33,10 @@ Las variables se leen desde archivos `.env` en `apps/backend` (o `.env.<MEDUSA_E
 
 ### Instalación por app
 
-- Backend: `npm install --prefix apps/backend`
-- Storefront: `npm install --prefix apps/storefront`
+- Backend: `pnpm install --dir apps/backend`
+- Storefront: `pnpm install --dir apps/storefront`
+
+Si no tienes pnpm instalado, puedes habilitarlo con Corepack (`corepack enable`). Como último recurso, usa npm: `npm install --prefix apps/backend` y `npm install --prefix apps/storefront`.
 
 Ejemplos de `.env` locales:
 
@@ -65,17 +67,17 @@ PUBLIC_STRIPE_PUBLIC_KEY=pk_test_xxx
 
 2. Ejecuta migraciones antes de sembrar datos:
    ```bash
-   npm --prefix apps/backend run migrate
+   pnpm --dir apps/backend run migrate
    ```
 
 3. Corre los seeds (requiere la DB activa):
    ```bash
-   npm --prefix apps/backend run seed
+   pnpm --dir apps/backend run seed
    ```
 
 4. Inicia el backend de Medusa con recarga en `http://localhost:9000`:
    ```bash
-   npm run dev:backend
+   pnpm run dev:backend
    ```
 
 Para ejecutar todo en contenedores, usa el servicio definido en la infraestructura:
@@ -88,12 +90,12 @@ docker compose -f infrastructure/docker-compose.yml up -d db redis backend
 
 1. Con backend corriendo en `http://localhost:9000`, inicia el storefront en `http://localhost:4321`:
    ```bash
-   npm run dev:storefront
+   pnpm run dev:storefront
    ```
 
 2. Levanta ambos servicios en paralelo desde la raíz:
    ```bash
-   npm run dev
+   pnpm run dev
    ```
 
 ### Infraestructura local con Docker
@@ -113,21 +115,21 @@ docker compose -f infrastructure/docker-compose.yml up -d db redis backend
 
 3. Para ejecutar seeds dentro del contenedor del backend:
    ```bash
-   docker compose -f infrastructure/docker-compose.yml exec backend npm run seed
+   docker compose -f infrastructure/docker-compose.yml exec backend pnpm run seed
    ```
 
 ### Flujo de desarrollo local (sin Docker en las apps)
 
 1. Levanta la infraestructura (db y redis) con Docker o servicios locales equivalentes.
 2. Exporta las variables de entorno en `apps/backend/.env` (ver tabla anterior).
-3. En una terminal, inicia el backend: `npm run dev:backend`.
-4. En otra terminal, inicia el storefront: `npm run dev:storefront`.
-5. Corre seeds si necesitas datos de prueba: `npm run seed`.
+3. En una terminal, inicia el backend: `pnpm run dev:backend`.
+4. En otra terminal, inicia el storefront: `pnpm run dev:storefront`.
+5. Corre seeds si necesitas datos de prueba: `pnpm run seed`.
 
 ## Seeds y datos iniciales
 
-- Seed completo: `npm run seed` (requiere DB activa).
-- Crear usuario admin por defecto: `npm --prefix apps/backend run seed:admin`.
+- Seed completo: `pnpm run seed` (requiere DB activa).
+- Crear usuario admin por defecto: `pnpm --dir apps/backend run seed:admin`.
 
 ## Plugins y personalización
 
@@ -149,8 +151,8 @@ Más detalles en [docs/plugins.md](docs/plugins.md).
 
 ## Despliegue
 
-- **Backend**: compila con `npm --prefix apps/backend run build` y ejecuta con `npm --prefix apps/backend run start` usando las variables de entorno productivas. Puedes empaquetarlo en contenedor reutilizando `infrastructure/docker-compose.yml` como referencia.
-- **Storefront**: genera assets estáticos con `npm --prefix apps/storefront run build` y sirve con tu hosting preferido (`npm --prefix apps/storefront run preview` para probar).
+- **Backend**: compila con `pnpm --dir apps/backend run build` y ejecuta con `pnpm --dir apps/backend run start` usando las variables de entorno productivas. Puedes empaquetarlo en contenedor reutilizando `infrastructure/docker-compose.yml` como referencia.
+- **Storefront**: genera assets estáticos con `pnpm --dir apps/storefront run build` y sirve con tu hosting preferido (`pnpm --dir apps/storefront run preview` para probar).
 - Asegura que `DATABASE_URL`, `REDIS_URL`, `STORE_CORS`, `ADMIN_CORS` y secretos estén configurados en el entorno de despliegue.
 
 ## Documentación adicional

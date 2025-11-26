@@ -3,14 +3,27 @@ set -euo pipefail
 
 cd /app
 
+USE_PNPM=false
+
+ensure_pnpm() {
+  if command -v pnpm >/dev/null 2>&1; then
+    return
+  fi
+
+  if command -v corepack >/dev/null 2>&1; then
+    corepack enable
+  fi
+}
+
 install_dependencies() {
   if [ -f pnpm-lock.yaml ]; then
-    if ! command -v pnpm >/dev/null 2>&1; then
-      if command -v corepack >/dev/null 2>&1; then
-        corepack enable
-      fi
-    fi
+    USE_PNPM=true
+    ensure_pnpm
     pnpm install --frozen-lockfile
+  elif command -v pnpm >/dev/null 2>&1; then
+    USE_PNPM=true
+    ensure_pnpm
+    pnpm install
   elif [ -f package-lock.json ]; then
     npm ci
   else
@@ -18,22 +31,30 @@ install_dependencies() {
   fi
 }
 
+run_script() {
+  if [ "$USE_PNPM" = true ]; then
+    pnpm run "$@"
+  else
+    npm run "$@"
+  fi
+}
+
 run_migrations() {
-  npm run migrate
+  run_script migrate
 }
 
 maybe_seed() {
   if [ "${RUN_SEED:-false}" = "true" ]; then
     if [ -n "${SEED_FILE:-}" ]; then
-      npm run seed -- "${SEED_FILE}"
+      run_script seed -- "${SEED_FILE}"
     else
-      npm run seed
+      run_script seed
     fi
   fi
 }
 
 start_application() {
-  npm run "${START_COMMAND:-dev}"
+  run_script "${START_COMMAND:-dev}"
 }
 
 install_dependencies

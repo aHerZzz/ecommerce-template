@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev:storefront": "npm --prefix apps/storefront run dev",
-    "dev:backend": "npm --prefix apps/backend run dev",
-    "dev": "sh -c 'npm run dev:backend & npm run dev:storefront & wait'",
-    "seed": "npm --prefix apps/backend run seed"
+    "dev:storefront": "pnpm --dir apps/storefront run dev",
+    "dev:backend": "pnpm --dir apps/backend run dev",
+    "dev": "sh -c 'pnpm run dev:backend & pnpm run dev:storefront & wait'",
+    "seed": "pnpm --dir apps/backend run seed"
   }
 }
