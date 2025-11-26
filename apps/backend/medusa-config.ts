@@ -1,7 +1,15 @@
 import dotenv from "dotenv";
 import path from "path";
+import { fileURLToPath } from "url";
 
-dotenv.config({ path: process.env.MEDUSA_ENV ? `.env.${process.env.MEDUSA_ENV}` : path.join(process.cwd(), ".env") });
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({
+  path: process.env.MEDUSA_ENV
+    ? `.env.${process.env.MEDUSA_ENV}`
+    : path.join(process.cwd(), ".env"),
+});
 
 type Config = {
   projectConfig: Record<string, unknown>;
