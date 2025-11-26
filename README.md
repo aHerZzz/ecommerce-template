@@ -31,12 +31,12 @@ Las variables se leen desde archivos `.env` en `apps/backend` (o `.env.<MEDUSA_E
 
 ## Comandos principales
 
-### Instalación por app
+### Instalación por app (paso a paso)
 
-- Backend: `pnpm install --dir apps/backend`
-- Storefront: `pnpm install --dir apps/storefront`
-
-Si no tienes pnpm instalado, puedes habilitarlo con Corepack (`corepack enable`). Como último recurso, usa npm: `npm install --prefix apps/backend` y `npm install --prefix apps/storefront`.
+1. Habilita pnpm si no lo tienes: `corepack enable pnpm` (o instala pnpm manualmente).
+2. Instala dependencias del backend: `pnpm install --dir apps/backend`.
+3. Instala dependencias del storefront: `pnpm install --dir apps/storefront`.
+4. Verifica que los binarios queden disponibles desde la raíz (pnpm usa el store compartido del workspace).
 
 Ejemplos de `.env` locales:
 
@@ -56,7 +56,7 @@ PUBLIC_BACKEND_URL=http://localhost:9000
 PUBLIC_STRIPE_PUBLIC_KEY=pk_test_xxx
 ```
 
-### Backend y base de datos
+### Backend y base de datos (docker-compose + pnpm)
 
 1. Levanta base de datos y Redis (Docker):
    ```bash
@@ -65,22 +65,28 @@ PUBLIC_STRIPE_PUBLIC_KEY=pk_test_xxx
    - PostgreSQL: `localhost:5432`
    - Redis: `localhost:6379`
 
-2. Ejecuta migraciones antes de sembrar datos:
+2. Ejecuta las migraciones desde tu máquina:
    ```bash
    pnpm --dir apps/backend run migrate
    ```
 
-3. Corre los seeds (requiere la DB activa):
+3. Semilla los datos (host):
    ```bash
    pnpm --dir apps/backend run seed
    ```
 
-4. Inicia el backend de Medusa con recarga en `http://localhost:9000`:
+4. Alternativa: corre migraciones y seeds dentro del contenedor del backend (si levantaste `backend` con Docker):
+   ```bash
+   docker compose -f infrastructure/docker-compose.yml exec backend pnpm run migrate
+   docker compose -f infrastructure/docker-compose.yml exec backend pnpm run seed
+   ```
+
+5. Inicia el backend de Medusa con recarga en `http://localhost:9000`:
    ```bash
    pnpm run dev:backend
    ```
 
-Para ejecutar todo en contenedores, usa el servicio definido en la infraestructura:
+Para ejecutar todo en contenedores en segundo plano:
 ```bash
 docker compose -f infrastructure/docker-compose.yml up -d db redis backend
 ```
@@ -88,12 +94,12 @@ docker compose -f infrastructure/docker-compose.yml up -d db redis backend
 
 ### Storefront (Astro)
 
-1. Con backend corriendo en `http://localhost:9000`, inicia el storefront en `http://localhost:4321`:
+1. Con el backend operativo en `http://localhost:9000`, inicia el storefront en `http://localhost:4321`:
    ```bash
    pnpm run dev:storefront
    ```
 
-2. Levanta ambos servicios en paralelo desde la raíz:
+2. Levanta backend + storefront en paralelo desde la raíz (dos procesos pnpm):
    ```bash
    pnpm run dev
    ```
@@ -117,6 +123,10 @@ docker compose -f infrastructure/docker-compose.yml up -d db redis backend
    ```bash
    docker compose -f infrastructure/docker-compose.yml exec backend pnpm run seed
    ```
+
+> **Nota de solución de problemas:** el `docker-compose.yml` expone las vars `RUN_SEED` y `SEED_FILE`. Déjalas en `false`/vacías
+> para evitar que el contenedor ejecute seeds automáticamente en cada arranque, o define `SEED_FILE` con la ruta relativa del
+> seed que quieras correr cuando establezcas `RUN_SEED=true`.
 
 ### Flujo de desarrollo local (sin Docker en las apps)
 
