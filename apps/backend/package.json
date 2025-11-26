@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "cross-env MEDUSA_CONFIG_FILE=./medusa-config.js NODE_OPTIONS=\"--loader ts-node/esm --experimental-specifier-resolution=node\" medusa develop",
-    "start": "cross-env MEDUSA_CONFIG_FILE=./medusa-config.js NODE_OPTIONS=\"--loader ts-node/esm --experimental-specifier-resolution=node\" medusa start",
+    "dev": "cross-env-shell \"MEDUSA_ENV=${MEDUSA_ENV:-host} ENV_FILE=${ENV_FILE:-./.env.host} MEDUSA_CONFIG_FILE=./medusa-config.js NODE_OPTIONS=\\\"--loader ts-node/esm --experimental-specifier-resolution=node\\\" medusa develop\"",
+    "start": "cross-env-shell \"MEDUSA_ENV=${MEDUSA_ENV:-host} ENV_FILE=${ENV_FILE:-./.env.host} MEDUSA_CONFIG_FILE=./medusa-config.js NODE_OPTIONS=\\\"--loader ts-node/esm --experimental-specifier-resolution=node\\\" medusa start\"",
     "build": "tsc -p tsconfig.json",
     "migrate": "cross-env-shell \"MEDUSA_ENV=${MEDUSA_ENV:-host} ENV_FILE=${ENV_FILE:-./.env.host} MEDUSA_CONFIG_FILE=./medusa-config.js NODE_OPTIONS=\\\"--loader ts-node/esm --experimental-specifier-resolution=node\\\" medusa db:migrate\"",
     "seed": "cross-env-shell \"MEDUSA_ENV=${MEDUSA_ENV:-host} ENV_FILE=${ENV_FILE:-./.env.host} MEDUSA_CONFIG_FILE=./medusa-config.js medusa exec ./scripts/seed.cjs ${npm_config_file:-./data/seed.json}\"",
