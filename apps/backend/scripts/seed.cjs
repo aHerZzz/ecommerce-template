@@ -21,7 +21,7 @@ const maybeResolve = (container, key) => {
 /**
  * @param {{ container: import("@medusajs/framework/types").MedusaContainer; args: string[] }} context
  */
-module.exports = async function seed({ container, args }) {
+const seed = async function seed({ container, args }) {
   const logger = resolveLogger(container);
   const seedPath = args[0] ?? "./data/seed.json";
   const absolutePath = path.resolve(process.cwd(), seedPath);
@@ -114,3 +114,6 @@ module.exports = async function seed({ container, args }) {
 
   logger.info("Seed script completed.");
 };
+
+module.exports = seed;
+module.exports.default = seed;

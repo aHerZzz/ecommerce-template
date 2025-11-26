@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
+import { Modules } from "@medusajs/utils";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -14,6 +15,7 @@ dotenv.config({
 type Config = {
   projectConfig: Record<string, unknown>;
   plugins: Array<string | { resolve: string; options?: Record<string, unknown> }>;
+  modules?: Record<string, { resolve: string; options?: Record<string, unknown> }>;
 };
 
 const {
@@ -26,6 +28,98 @@ const {
   JWT_SECRET = "supersecret",
   COOKIE_SECRET = "supersecret",
 } = process.env;
+
+const redisEnabled = Boolean(REDIS_URL);
+
+const modules: NonNullable<Config["modules"]> = {
+  [Modules.CACHE]: {
+    resolve: redisEnabled ? "@medusajs/medusa/cache-redis" : "@medusajs/medusa/cache-inmemory",
+    options: redisEnabled ? { redisUrl: REDIS_URL } : {},
+  },
+  [Modules.EVENT_BUS]: {
+    resolve: redisEnabled ? "@medusajs/medusa/event-bus-redis" : "@medusajs/medusa/event-bus-local",
+    options: redisEnabled ? { redisUrl: REDIS_URL } : {},
+  },
+  [Modules.WORKFLOW_ENGINE]: {
+    resolve: redisEnabled
+      ? "@medusajs/medusa/workflow-engine-redis"
+      : "@medusajs/medusa/workflow-engine-inmemory",
+    options: redisEnabled ? { redis: { url: REDIS_URL } } : {},
+  },
+  [Modules.PRODUCT]: {
+    resolve: "@medusajs/medusa/product",
+    options: {
+      database: {
+        clientUrl: DATABASE_URL,
+      },
+    },
+  },
+  [Modules.PRICING]: {
+    resolve: "@medusajs/medusa/pricing",
+    options: {
+      database: {
+        clientUrl: DATABASE_URL,
+      },
+    },
+  },
+  [Modules.CART]: {
+    resolve: "@medusajs/medusa/cart",
+    options: {
+      database: {
+        clientUrl: DATABASE_URL,
+      },
+      redisUrl: REDIS_URL,
+    },
+  },
+  [Modules.ORDER]: {
+    resolve: "@medusajs/medusa/order",
+    options: {
+      database: {
+        clientUrl: DATABASE_URL,
+      },
+    },
+  },
+  [Modules.REGION]: {
+    resolve: "@medusajs/medusa/region",
+    options: {
+      database: {
+        clientUrl: DATABASE_URL,
+      },
+    },
+  },
+  [Modules.INVENTORY]: {
+    resolve: "@medusajs/medusa/inventory",
+    options: {
+      database: {
+        clientUrl: DATABASE_URL,
+      },
+    },
+  },
+  [Modules.FULFILLMENT]: {
+    resolve: "@medusajs/medusa/fulfillment",
+    options: {
+      database: {
+        clientUrl: DATABASE_URL,
+      },
+    },
+  },
+  [Modules.PAYMENT]: {
+    resolve: "@medusajs/medusa/payment",
+    options: {
+      database: {
+        clientUrl: DATABASE_URL,
+      },
+    },
+  },
+  [Modules.PROMOTION]: {
+    resolve: "@medusajs/medusa/promotion",
+    options: {
+      database: {
+        clientUrl: DATABASE_URL,
+      },
+    },
+  },
+};
 
 const plugins: Config["plugins"] = ["@medusajs/medusa"];
 
@@ -71,6 +165,7 @@ const config: Config = {
     query_limit: 50,
     database_logging: true,
   },
+  modules,
   plugins,
 };
 
