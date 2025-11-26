@@ -9,31 +9,26 @@ import CookieBanner from '../components/ui/CookieBanner';
 const prefersDark = themeSettings.darkMode?.default === 'dark';
 const prefersSystem = themeSettings.darkMode?.default === 'system';
 
-const rootStyle = `
-  --color-primary: ${themeSettings.palette.primary};
-  --color-accent: ${themeSettings.palette.accent};
-  --color-background: ${themeSettings.palette.background};
-  --color-surface: ${themeSettings.palette.surface};
-  --color-text: ${themeSettings.palette.text};
-  --font-body: ${themeSettings.typography.body};
-  --font-heading: ${themeSettings.typography.heading};
-`;
-
-const darkStyles = `
-  .dark {
-    --color-primary: ${themeSettings.paletteDark?.primary ?? themeSettings.palette.primary};
-    --color-accent: ${themeSettings.paletteDark?.accent ?? themeSettings.palette.accent};
-    --color-background: ${
-      themeSettings.paletteDark?.background ?? themeSettings.palette.background
-    };
-    --color-surface: ${themeSettings.paletteDark?.surface ?? themeSettings.palette.surface};
-    --color-text: ${themeSettings.paletteDark?.text ?? themeSettings.palette.text};
-  }
-`;
+const rootStyle = Object.entries({
+  '--color-primary-light': themeSettings.palette.primary,
+  '--color-accent-light': themeSettings.palette.accent,
+  '--color-background-light': themeSettings.palette.background,
+  '--color-surface-light': themeSettings.palette.surface,
+  '--color-text-light': themeSettings.palette.text,
+  '--color-primary-dark': themeSettings.paletteDark?.primary ?? themeSettings.palette.primary,
+  '--color-accent-dark': themeSettings.paletteDark?.accent ?? themeSettings.palette.accent,
+  '--color-background-dark': themeSettings.paletteDark?.background ?? themeSettings.palette.background,
+  '--color-surface-dark': themeSettings.paletteDark?.surface ?? themeSettings.palette.surface,
+  '--color-text-dark': themeSettings.paletteDark?.text ?? themeSettings.palette.text,
+  '--font-body-base': themeSettings.typography.body,
+  '--font-heading-base': themeSettings.typography.heading
+})
+  .map(([key, value]) => `${key}: ${value};`)
+  .join(' ');
 
 const themeScript = `(() => {
-  const prefersSystem = ${prefersSystem ? 'true' : 'false'};
-  const prefersDark = ${prefersDark ? 'true' : 'false'};
+  const prefersSystem = ${JSON.stringify(prefersSystem)};
+  const prefersDark = ${JSON.stringify(prefersDark)};
   const stored = localStorage.getItem('theme');
   const prefers = window.matchMedia('(prefers-color-scheme: dark)').matches;
   const theme = stored || (prefersSystem ? (prefers ? 'dark' : 'light') : prefersDark ? 'dark' : 'light');
@@ -52,7 +47,6 @@ const { title = storeSettings.branding.storeName, description = storeSettings.br
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="icon" type="image/png" href={themeSettings.logos.favicon} />
-    <style is:global set:html={darkStyles}></style>
     {themeSettings.darkMode?.enabled && (
       <script>
         {themeScript}
