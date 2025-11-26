@@ -1,4 +1,16 @@
-const BASE_URL = import.meta.env.PUBLIC_BACKEND_URL || 'https://api.example.com';
+const configuredBaseUrl = import.meta.env.PUBLIC_BACKEND_URL?.trim();
+
+const BASE_URL = (() => {
+  if (configuredBaseUrl && configuredBaseUrl.length > 0) {
+    return configuredBaseUrl;
+  }
+
+  if (import.meta.env.DEV) {
+    return 'http://localhost:9000';
+  }
+
+  throw new Error('PUBLIC_BACKEND_URL is required to perform API requests.');
+})();
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE_URL}${path}`, {

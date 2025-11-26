@@ -10,6 +10,8 @@ npm install
 npm run dev
 ```
 
+> Importante: el frontend necesita conocer la URL del backend para poder cargar el catálogo inicial. Por defecto el entorno de desarrollo usa `http://localhost:9000`, así que crea un `.env` con ese valor si no tienes uno propio.
+
 Scripts disponibles:
 
 - `npm run dev`: levanta el entorno de desarrollo.
@@ -22,7 +24,7 @@ Scripts disponibles:
 Crea un fichero `.env` en `apps/storefront` si necesitas personalizar las integraciones:
 
 ```
-PUBLIC_BACKEND_URL=http://localhost:3000
+PUBLIC_BACKEND_URL=http://localhost:9000
 PUBLIC_STRIPE_PUBLIC_KEY=pk_test_xxx
 STRIPE_SECRET_KEY=sk_test_xxx
 ```
