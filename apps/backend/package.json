@@ -20,6 +20,8 @@
     "@medusajs/framework": "2.11.3",
     "@medusajs/utils": "2.11.3",
     "@medusajs/types": "2.11.3",
+    "@medusajs/auth": "2.11.3",
+    "@medusajs/auth-emailpass": "2.11.3",
     "@medusajs/payment-stripe": "2.11.3",
     "dotenv": "^16.4.5",
     "pg": "^8.11.5",

@@ -26,6 +26,47 @@ const {
 const redisEnabled = Boolean(REDIS_URL);
 
 const modules = {
+  [Modules.AUTH]: {
+    resolve: "@medusajs/medusa/auth",
+    options: {
+      database: {
+        clientUrl: DATABASE_URL,
+      },
+      providers: [
+        {
+          resolve: "@medusajs/auth-emailpass",
+          id: "emailpass",
+          options: {
+            secret: JWT_SECRET,
+          },
+        },
+      ],
+    },
+  },
+  [Modules.CUSTOMER]: {
+    resolve: "@medusajs/medusa/customer",
+    options: {
+      database: {
+        clientUrl: DATABASE_URL,
+      },
+    },
+  },
+  [Modules.USER]: {
+    resolve: "@medusajs/medusa/user",
+    options: {
+      database: {
+        clientUrl: DATABASE_URL,
+      },
+    },
+  },
+  [Modules.API_KEY]: {
+    resolve: "@medusajs/medusa/api-key",
+    options: {
+      database: {
+        clientUrl: DATABASE_URL,
+      },
+    },
+  },
   [Modules.CACHE]: {
     resolve: redisEnabled ? "@medusajs/medusa/cache-redis" : "@medusajs/medusa/cache-inmemory",
     options: redisEnabled ? { redisUrl: REDIS_URL } : {},

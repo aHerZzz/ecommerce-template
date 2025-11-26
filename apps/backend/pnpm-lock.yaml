@@ -8,6 +8,12 @@ importers:
 
   .:
     dependencies:
+      '@medusajs/auth':
+        specifier: 2.11.3
+        version: 2.11.3(@medusajs/framework@2.11.3(@medusajs/cli@2.11.3(@types/node@22.19.1))(@types/node@22.19.1)(ioredis@5.8.2)(vite@5.4.21(@types/node@22.19.1)))
+      '@medusajs/auth-emailpass':
+        specifier: 2.11.3
+        version: 2.11.3(@medusajs/framework@2.11.3(@medusajs/cli@2.11.3(@types/node@22.19.1))(@types/node@22.19.1)(ioredis@5.8.2)(vite@5.4.21(@types/node@22.19.1)))
       '@medusajs/cli':
         specifier: 2.11.3
         version: 2.11.3(@types/node@22.19.1)
