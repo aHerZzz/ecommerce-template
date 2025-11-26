@@ -2,7 +2,7 @@ import React from 'react';
 import clsx from 'clsx';
 
 type CardProps = {
-  as?: keyof HTMLElementTagNameMap;
+  as?: keyof JSX.IntrinsicElements;
   title?: string;
   children: React.ReactNode;
   className?: string;

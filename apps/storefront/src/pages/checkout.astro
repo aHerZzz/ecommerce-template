@@ -1,7 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { CartApp } from '../components/CartApp';
-import { CheckoutForm } from '../components/CheckoutForm';
+import { CheckoutApp } from '../components/CheckoutApp';
 ---
 <BaseLayout title="Checkout" description="Completa tu compra">
   <section class="flex flex-col gap-6">
@@ -12,9 +11,6 @@ import { CheckoutForm } from '../components/CheckoutForm';
         privacidad RGPD para procesar el pedido.
       </p>
     </div>
-    <div class="grid gap-6 lg:grid-cols-2">
-      <CheckoutForm client:load />
-      <CartApp client:load />
-    </div>
+    <CheckoutApp client:load />
   </section>
 </BaseLayout>

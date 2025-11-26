@@ -29,7 +29,7 @@ export function ProfileApp() {
           <p className="text-sm text-slate-500 dark:text-slate-300 mb-3">
             El carrito se guarda por sesión de invitado y también por usuario autenticado.
           </p>
-          <CartProvider userId={user?.id}>
+          <CartProvider>
             <CartSummary />
           </CartProvider>
         </Card>

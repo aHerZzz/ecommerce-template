@@ -1,12 +1,15 @@
 import React from 'react';
-import type { Product } from '../data/products';
 import { CartProvider } from './CartContext';
 import { ProductGrid } from './ProductGrid';
+import { ProductsProvider } from '../hooks/useProducts';
+import type { Product } from '../types/store';
 
-export function StorefrontApp({ products }: { products: Product[] }) {
+export function StorefrontApp({ products = [] }: { products?: Product[] }) {
   return (
     <CartProvider>
-      <ProductGrid products={products} />
+      <ProductsProvider initialProducts={products}>
+        <ProductGrid />
+      </ProductsProvider>
     </CartProvider>
   );
 }
