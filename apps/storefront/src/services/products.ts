@@ -39,8 +39,17 @@ function mapProduct(product: ApiProduct): Product {
 }
 
 export async function fetchProducts(): Promise<Product[]> {
-  const response = await apiClient.get<ProductListResponse>('/store/products');
-  return response.products.map(mapProduct);
+  try {
+    const response = await apiClient.get<ProductListResponse>('/store/products');
+    return response.products.map(mapProduct);
+  } catch (error) {
+    const details = (error as Error)?.message;
+    throw new Error(
+      `No se pudo cargar el catálogo inicial. Verifica PUBLIC_BACKEND_URL y que el backend de Medusa esté en ejecución.${
+        details ? ` Detalles: ${details}` : ''
+      }`
+    );
+  }
 }
 
 export async function fetchProduct(slug: string): Promise<Product | undefined> {
