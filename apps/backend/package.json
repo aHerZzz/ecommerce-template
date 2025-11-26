@@ -15,6 +15,7 @@
     "lint": "tsc --noEmit"
   },
   "dependencies": {
+    "express": "^4.17.21",
     "@medusajs/medusa": "2.11.3",
     "@medusajs/cli": "2.11.3",
     "@medusajs/framework": "2.11.3",
