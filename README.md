@@ -22,6 +22,8 @@ Las variables se leen desde archivos `.env` en `apps/backend` (o `.env.<MEDUSA_E
 - `.env`: lo consume el contenedor de Docker (`DATABASE_URL=postgres://medusa:medusa@db:5432/medusa`, `REDIS_URL=redis://redis:6379`).
 - `.env.host`: pensado para ejecutar migraciones/seeds desde tu máquina (`DATABASE_URL=postgres://medusa:medusa@localhost:5432/medusa`, `REDIS_URL=redis://localhost:6379`).
 
+Al ejecutar procesos del backend desde el host (`dev`, `start`, `migrate`, `seed`), define `MEDUSA_ENV=host` (las scripts ya lo fijan por defecto) y usa `.env.host` o un archivo equivalente (`ENV_FILE=./.env.host.local`). Los contenedores de Docker siguen usando el `.env` generado para su propia red interna.
+
 | Variable | Descripción | Ejemplo |
 | --- | --- | --- |
 | `DATABASE_URL` | Cadena de conexión PostgreSQL. | `postgres://medusa:medusa@localhost:5432/medusa` |
@@ -89,7 +91,7 @@ PUBLIC_STRIPE_PUBLIC_KEY=pk_test_xxx
 
 5. Inicia el backend de Medusa con recarga en `http://localhost:9000`:
    ```bash
-   pnpm run dev:backend
+   MEDUSA_ENV=host pnpm run dev:backend
    ```
 
 Para ejecutar todo en contenedores en segundo plano:
@@ -138,8 +140,8 @@ docker compose -f infrastructure/docker-compose.yml up -d db redis backend
 ### Flujo de desarrollo local (sin Docker en las apps)
 
 1. Levanta la infraestructura (db y redis) con Docker o servicios locales equivalentes.
-2. Exporta las variables de entorno en `apps/backend/.env` (ver tabla anterior).
-3. En una terminal, inicia el backend: `pnpm run dev:backend`.
+2. Exporta las variables de entorno en `apps/backend/.env.host` (o usa `ENV_FILE=./apps/backend/.env.host.local` para overrides).
+3. En una terminal, inicia el backend: `MEDUSA_ENV=host pnpm run dev:backend`.
 4. En otra terminal, inicia el storefront: `pnpm run dev:storefront`.
 5. Corre seeds si necesitas datos de prueba: `pnpm run seed`.
 
