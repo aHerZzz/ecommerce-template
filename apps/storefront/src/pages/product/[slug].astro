@@ -5,6 +5,7 @@ import { ProductDetailApp } from '../../components/ProductDetailApp';
 
 const { slug } = Astro.params;
 const product = await fetchProduct(slug as string);
+export const prerender = false;
 ---
 <BaseLayout title={product?.name ?? 'Producto'} description={product?.description}>
   <ProductDetailApp client:load slug={slug as string} initialProduct={product} />
