@@ -74,6 +74,7 @@ PUBLIC_STRIPE_PUBLIC_KEY=pk_test_xxx
    ```bash
    pnpm --dir apps/backend run seed
    ```
+   - Usa un archivo alternativo: `pnpm --dir apps/backend run seed --file=./data/otra-semilla.json`
 
 4. Alternativa: corre migraciones y seeds dentro del contenedor del backend (si levantaste `backend` con Docker):
    ```bash
@@ -123,10 +124,11 @@ docker compose -f infrastructure/docker-compose.yml up -d db redis backend
    ```bash
    docker compose -f infrastructure/docker-compose.yml exec backend pnpm run seed
    ```
+   - El script acepta `--file=<ruta>` igual que en host si quieres otro JSON.
 
-> **Nota de solución de problemas:** el `docker-compose.yml` expone las vars `RUN_SEED` y `SEED_FILE`. Déjalas en `false`/vacías
-> para evitar que el contenedor ejecute seeds automáticamente en cada arranque, o define `SEED_FILE` con la ruta relativa del
-> seed que quieras correr cuando establezcas `RUN_SEED=true`.
+> **Nota de solución de problemas:** el `docker-compose.yml` expone las vars `RUN_SEED` y `SEED_FILE`. Establece `RUN_SEED=true` para
+> ejecutar seeds en cada arranque y define `SEED_FILE` (por ejemplo `./data/otra-semilla.json`) para sobreescribir el valor por defecto
+> `./data/seed.json`.
 
 ### Flujo de desarrollo local (sin Docker en las apps)
 
@@ -138,7 +140,7 @@ docker compose -f infrastructure/docker-compose.yml up -d db redis backend
 
 ## Seeds y datos iniciales
 
-- Seed completo: `pnpm run seed` (requiere DB activa).
+- Seed completo: `pnpm run seed` (requiere DB activa). Acepta `--file=./data/mi-semilla.json` para usar otro archivo.
 - Crear usuario admin por defecto: `pnpm --dir apps/backend run seed:admin`.
 
 ## Plugins y personalización

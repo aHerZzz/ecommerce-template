@@ -46,7 +46,7 @@ run_migrations() {
 maybe_seed() {
   if [ "${RUN_SEED:-false}" = "true" ]; then
     if [ -n "${SEED_FILE:-}" ]; then
-      run_script seed -- "${SEED_FILE}"
+      npm_config_file="${SEED_FILE}" run_script seed
     else
       run_script seed
     fi
