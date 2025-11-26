@@ -75,7 +75,17 @@ const seed = async function seed({ container, args }) {
       tags: product.tags?.map((value) => ({ value })),
       images: product.images?.map((url) => ({ url })),
       options: product.options?.map((option) => ({ title: option.title, values: option.values })),
-      variants: product.variants?.map((variant) => ({ title: variant.title, options: variant.options })),
+      variants: product.variants?.map((variant) => ({
+        title: variant.title,
+        options: variant.options,
+        prices: variant.prices?.map((price) => ({
+          amount: price.amount,
+          currency_code: price.currency_code,
+          min_quantity: price.min_quantity,
+          max_quantity: price.max_quantity,
+          region_id: price.region_id,
+        })),
+      })),
       categories: product.categories,
     }));
 
