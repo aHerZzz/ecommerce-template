@@ -31,13 +31,70 @@ Las variables se leen desde archivos `.env` en `apps/backend` (o `.env.<MEDUSA_E
 
 ## Comandos principales
 
-Desde la raíz del monorepo:
+### Instalación por app
 
-- `npm install --prefix apps/backend` y `npm install --prefix apps/storefront` para instalar dependencias.
-- `npm run dev:backend`: inicia el backend de Medusa con recarga.
-- `npm run dev:storefront`: inicia el storefront de Astro en `http://localhost:4321`.
-- `npm run dev`: levanta backend y storefront en paralelo.
-- `npm run seed`: ejecuta los seeds del backend.
+- Backend: `npm install --prefix apps/backend`
+- Storefront: `npm install --prefix apps/storefront`
+
+Ejemplos de `.env` locales:
+
+```bash
+# apps/backend/.env
+DATABASE_URL=postgres://medusa:medusa@localhost:5432/medusa
+REDIS_URL=redis://localhost:6379
+STORE_CORS=http://localhost:4321
+ADMIN_CORS=http://localhost:7000
+JWT_SECRET=supersecret
+COOKIE_SECRET=supersecret
+```
+
+```bash
+# apps/storefront/.env
+PUBLIC_BACKEND_URL=http://localhost:9000
+PUBLIC_STRIPE_PUBLIC_KEY=pk_test_xxx
+```
+
+### Backend y base de datos
+
+1. Levanta base de datos y Redis (Docker):
+   ```bash
+   docker compose -f infrastructure/docker-compose.yml up -d db redis
+   ```
+   - PostgreSQL: `localhost:5432`
+   - Redis: `localhost:6379`
+
+2. Ejecuta migraciones antes de sembrar datos:
+   ```bash
+   npm --prefix apps/backend run migrate
+   ```
+
+3. Corre los seeds (requiere la DB activa):
+   ```bash
+   npm --prefix apps/backend run seed
+   ```
+
+4. Inicia el backend de Medusa con recarga en `http://localhost:9000`:
+   ```bash
+   npm run dev:backend
+   ```
+
+Para ejecutar todo en contenedores, usa el servicio definido en la infraestructura:
+```bash
+docker compose -f infrastructure/docker-compose.yml up -d db redis backend
+```
+- Backend Medusa: `http://localhost:9000`
+
+### Storefront (Astro)
+
+1. Con backend corriendo en `http://localhost:9000`, inicia el storefront en `http://localhost:4321`:
+   ```bash
+   npm run dev:storefront
+   ```
+
+2. Levanta ambos servicios en paralelo desde la raíz:
+   ```bash
+   npm run dev
+   ```
 
 ### Infraestructura local con Docker
 
@@ -76,8 +133,12 @@ Desde la raíz del monorepo:
 
 El backend carga plugins definidos en `apps/backend/src/plugins` y configurados en `apps/backend/medusa-config.ts`.
 
-- `shipping`: expone métodos de envío mock desde rutas públicas (`/store/shipping-options`).
-- `mock-webhook`: expone endpoints de prueba de webhooks tanto para store como admin (`/hooks/test`).
+- `shipping`: expone rutas públicas de catálogo de envíos.
+  - `GET /store/shipping-options` devuelve métodos mock.
+  - `GET /store/shipping-options/:id` devuelve un método específico.
+- `mock-webhook`: endpoints de prueba disponibles para store y admin.
+  - `GET /hooks/test` responde como healthcheck sencillo.
+  - `POST /hooks/test` devuelve el payload recibido.
 
 Para añadir o modificar plugins:
 1. Crea una carpeta dentro de `apps/backend/src/plugins/<mi-plugin>` con un `index.ts` que exporte la función del plugin.
