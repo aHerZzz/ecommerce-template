@@ -72,12 +72,12 @@ PUBLIC_STRIPE_PUBLIC_KEY=pk_test_xxx
 2. Ejecuta las migraciones desde tu máquina con las variables del host:
    ```bash
    cp apps/backend/.env.host apps/backend/.env.host.local  # opcional, para personalizar
-   MEDUSA_ENV=host pnpm --dir apps/backend run migrate
+   MEDUSA_ENV=host pnpm --dir apps/backend run migrate  # carga apps/backend/.env.host por defecto
    ```
 
 3. Semilla los datos (host) usando el mismo archivo de entorno:
    ```bash
-   MEDUSA_ENV=host pnpm --dir apps/backend run seed
+   MEDUSA_ENV=host pnpm --dir apps/backend run seed  # o ENV_FILE=./apps/backend/.env.host.local pnpm --dir apps/backend run seed
    ```
    - Usa un archivo alternativo: `pnpm --dir apps/backend run seed --file=./data/otra-semilla.json`
 

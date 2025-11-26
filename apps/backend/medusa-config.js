@@ -6,12 +6,22 @@ import { Modules } from "@medusajs/utils";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const envFileName = process.env.MEDUSA_ENV
-  ? `.env.${process.env.MEDUSA_ENV}`
-  : ".env";
+const envFile = (() => {
+  if (process.env.ENV_FILE) {
+    return path.isAbsolute(process.env.ENV_FILE)
+      ? process.env.ENV_FILE
+      : path.join(__dirname, process.env.ENV_FILE);
+  }
+
+  if (process.env.MEDUSA_ENV) {
+    return path.join(__dirname, `.env.${process.env.MEDUSA_ENV}`);
+  }
+
+  return path.join(__dirname, ".env");
+})();
 
 dotenv.config({
-  path: path.join(__dirname, envFileName),
+  path: envFile,
 });
 
 const {
@@ -24,6 +34,18 @@ const {
   JWT_SECRET = "supersecret",
   COOKIE_SECRET = "supersecret",
 } = process.env;
+
+if (!DATABASE_URL) {
+  console.warn(
+    "DATABASE_URL is not set. Database-backed modules may fail to initialize before Knex connections are attempted."
+  );
+}
+
+if (!REDIS_URL) {
+  console.warn(
+    "REDIS_URL is not set. Redis-backed workflows will fall back to in-memory implementations."
+  );
+}
 
 const redisEnabled = Boolean(REDIS_URL);
 
