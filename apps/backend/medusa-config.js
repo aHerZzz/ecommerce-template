@@ -24,6 +24,25 @@ dotenv.config({
   path: envFile,
 });
 
+const envFileLabel = path.relative(process.cwd(), envFile);
+const missingEnvVars = [];
+
+if (!process.env.DATABASE_URL) {
+  missingEnvVars.push("DATABASE_URL");
+}
+
+if (!process.env.REDIS_URL) {
+  missingEnvVars.push("REDIS_URL");
+}
+
+if (missingEnvVars.length) {
+  const advice =
+    "Define MEDUSA_ENV=host to load apps/backend/.env.host or set ENV_FILE to point at the right file.";
+  const message = `Missing ${missingEnvVars.join(", ")} after loading ${envFileLabel}. ${advice}`;
+  console.error(message);
+  throw new Error(message);
+}
+
 const {
   DATABASE_URL,
   REDIS_URL,
@@ -34,18 +53,6 @@ const {
   JWT_SECRET = "supersecret",
   COOKIE_SECRET = "supersecret",
 } = process.env;
-
-if (!DATABASE_URL) {
-  console.warn(
-    "DATABASE_URL is not set. Database-backed modules may fail to initialize before Knex connections are attempted."
-  );
-}
-
-if (!REDIS_URL) {
-  console.warn(
-    "REDIS_URL is not set. Redis-backed workflows will fall back to in-memory implementations."
-  );
-}
 
 const redisEnabled = Boolean(REDIS_URL);
 
