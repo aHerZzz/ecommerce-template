@@ -144,8 +144,9 @@ docker compose -f infrastructure/docker-compose.yml up -d db redis backend
 ### Flujo de desarrollo local (sin Docker en las apps)
 
 1. Levanta la infraestructura (db y redis) con Docker o servicios locales equivalentes.
-2. Exporta las variables de entorno en `apps/backend/.env.host` (o usa `ENV_FILE=./apps/backend/.env.host.local` para overrides).
-3. En una terminal, inicia el backend: `MEDUSA_ENV=host pnpm run dev:backend`.
+2. Define tus variables en `apps/backend/.env.host` o, para overrides locales, en `apps/backend/.env.host.local`.
+   - Fuera de Docker, `medusa-config.(js|ts)` detecta automáticamente primero `.env.host.local` y luego `.env.host`, por lo que no necesitas exportar `ENV_FILE`/`MEDUSA_ENV` para el flujo estándar.
+3. En una terminal, inicia el backend: `pnpm run dev:backend` (usa por defecto los archivos host detectados).
 4. En otra terminal, inicia el storefront: `pnpm run dev:storefront`.
 5. Corre seeds si necesitas datos de prueba: `pnpm run seed`.
 

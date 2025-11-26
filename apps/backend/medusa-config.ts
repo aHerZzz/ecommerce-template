@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { Modules } from "@medusajs/utils";
@@ -6,25 +7,71 @@ import { Modules } from "@medusajs/utils";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const envFile = (() => {
+const runningInContainer = fs.existsSync("/.dockerenv");
+const runningOnLocalhost = !runningInContainer;
+
+const resolveEnvFile = () => {
+  const resolveRelative = (target: string) =>
+    path.isAbsolute(target) ? target : path.join(__dirname, target);
+
   if (process.env.ENV_FILE) {
-    return path.isAbsolute(process.env.ENV_FILE)
-      ? process.env.ENV_FILE
-      : path.join(__dirname, process.env.ENV_FILE);
+    return resolveRelative(process.env.ENV_FILE);
+  }
+
+  if (runningOnLocalhost) {
+    const hostEnv = [".env.host.local", ".env.host"]
+      .map(resolveRelative)
+      .find((candidate) => fs.existsSync(candidate));
+
+    if (hostEnv) {
+      process.env.MEDUSA_ENV ??= "host";
+      return hostEnv;
+    }
   }
 
   if (process.env.MEDUSA_ENV) {
-    return path.join(__dirname, `.env.${process.env.MEDUSA_ENV}`);
+    return resolveRelative(`.env.${process.env.MEDUSA_ENV}`);
   }
 
-  return path.join(__dirname, ".env");
-})();
+  return resolveRelative(".env");
+};
+
+const envFile = resolveEnvFile();
 
 dotenv.config({
   path: envFile,
 });
 
 const envFileLabel = path.relative(process.cwd(), envFile);
+console.info(`Loading environment from ${envFileLabel}`);
+
+const pointsToDockerNetworkHost = (url?: string) => {
+  if (!url) {
+    return false;
+  }
+
+  try {
+    const { hostname } = new URL(url);
+    return hostname === "db" || hostname === "redis";
+  } catch {
+    return (
+      /@db[:/]/.test(url) ||
+      /:\/\/db[:/]/.test(url) ||
+      /redis:\/\/redis[:/]/.test(url)
+    );
+  }
+};
+
+const usesDockerNetworkValues =
+  pointsToDockerNetworkHost(process.env.DATABASE_URL) ||
+  pointsToDockerNetworkHost(process.env.REDIS_URL);
+
+if (runningOnLocalhost && usesDockerNetworkValues) {
+  const message =
+    `Refusing to load ${envFileLabel} because it points to Docker-only hosts (db/redis). Set ENV_FILE=./.env.host or ./apps/backend/.env.host.local when running on the host.`;
+  console.error(message);
+  throw new Error(message);
+}
 const missingEnvVars: string[] = [];
 
 if (!process.env.DATABASE_URL) {
@@ -37,7 +84,7 @@ if (!process.env.REDIS_URL) {
 
 if (missingEnvVars.length) {
   const advice =
-    "Define MEDUSA_ENV=host to load apps/backend/.env.host or set ENV_FILE to point at the right file.";
+    "Define MEDUSA_ENV=host to load apps/backend/.env.host(.local) or set ENV_FILE to point at the right file.";
   const message = `Missing ${missingEnvVars.join(", ")} after loading ${envFileLabel}. ${advice}`;
   console.error(message);
   throw new Error(message);
