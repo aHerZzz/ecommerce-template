@@ -3,6 +3,8 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { Modules } from "@medusajs/utils";
+import { Client } from "pg";
+import { createClient as createRedisClient } from "redis";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -44,6 +46,46 @@ if (runningOnLocalhost && usesDockerNetworkValues) {
 
 const missingEnvVars = [];
 
+const buildConnectionErrorMessage = (url) =>
+  `Cannot reach ${url} — did you load ${envFileLabel}?`;
+
+const checkPostgresConnection = async () => {
+  const client = new Client({
+    connectionString: process.env.DATABASE_URL,
+    connectionTimeoutMillis: 3000,
+  });
+
+  try {
+    await client.connect();
+    await client.query("SELECT 1");
+  } catch (error) {
+    console.error(error);
+    throw new Error(buildConnectionErrorMessage(process.env.DATABASE_URL));
+  } finally {
+    await client.end().catch(() => undefined);
+  }
+};
+
+const checkRedisConnection = async () => {
+  const client = createRedisClient({
+    url: process.env.REDIS_URL,
+    socket: {
+      connectTimeout: 3000,
+      reconnectStrategy: () => new Error("Redis reconnection disabled for startup check"),
+    },
+  });
+
+  try {
+    await client.connect();
+    await client.ping();
+  } catch (error) {
+    console.error(error);
+    throw new Error(buildConnectionErrorMessage(process.env.REDIS_URL));
+  } finally {
+    await client.quit().catch(() => undefined);
+  }
+};
+
 if (!process.env.DATABASE_URL) {
   missingEnvVars.push("DATABASE_URL");
 }
@@ -59,6 +101,9 @@ if (missingEnvVars.length) {
   console.error(message);
   throw new Error(message);
 }
+
+await checkPostgresConnection();
+await checkRedisConnection();
 
 const {
   DATABASE_URL,
