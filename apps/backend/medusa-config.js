@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { Modules } from "@medusajs/utils";
@@ -25,6 +26,22 @@ dotenv.config({
 });
 
 const envFileLabel = path.relative(process.cwd(), envFile);
+console.info(`Loading environment from ${envFileLabel}`);
+
+const runningInContainer = fs.existsSync("/.dockerenv");
+const runningOnLocalhost = !runningInContainer;
+const usesDockerNetworkValues =
+  (process.env.DATABASE_URL && /@db[:/]/.test(process.env.DATABASE_URL)) ||
+  (process.env.DATABASE_URL && /:\/\/db[:/]/.test(process.env.DATABASE_URL)) ||
+  (process.env.REDIS_URL && /redis:\/\/redis[:/]/.test(process.env.REDIS_URL));
+
+if (runningOnLocalhost && usesDockerNetworkValues) {
+  const message =
+    `Refusing to load ${envFileLabel} because it points to Docker network services. Set ENV_FILE=./.env.host for local development.`;
+  console.error(message);
+  throw new Error(message);
+}
+
 const missingEnvVars = [];
 
 if (!process.env.DATABASE_URL) {
