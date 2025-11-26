@@ -35,17 +35,23 @@ services:
     working_dir: /app
     volumes:
       - ../apps/backend:/app
+      - ./backend-entrypoint.sh:/usr/local/bin/backend-entrypoint.sh:ro
+    env_file:
+      - ../apps/backend/.env
     environment:
-      PORT: 9000
-      DATABASE_URL: postgres://medusa:medusa@db:5432/medusa
-      REDIS_URL: redis://redis:6379
-      STORE_CORS: http://localhost:4321
-      ADMIN_CORS: http://localhost:7000
-      JWT_SECRET: supersecret
-      COOKIE_SECRET: supersecret
+      PORT: ${PORT:-9000}
+      DATABASE_URL: ${DATABASE_URL:-postgres://medusa:medusa@db:5432/medusa}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+      STORE_CORS: ${STORE_CORS:-http://localhost:4321}
+      ADMIN_CORS: ${ADMIN_CORS:-http://localhost:7000}
+      JWT_SECRET: ${JWT_SECRET:-supersecret}
+      COOKIE_SECRET: ${COOKIE_SECRET:-supersecret}
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
       STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
-    command: sh -c "npm install && npm run dev"
+      RUN_SEED: ${RUN_SEED:-false}
+      SEED_FILE: ${SEED_FILE:-./data/seed.json}
+      START_COMMAND: ${START_COMMAND:-dev}
+    entrypoint: ["/bin/sh", "/usr/local/bin/backend-entrypoint.sh"]
     ports:
       - "9000:9000"
     depends_on:
