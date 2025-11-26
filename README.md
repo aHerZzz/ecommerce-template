@@ -22,6 +22,10 @@ Las variables se leen desde archivos `.env` en `apps/backend` (o `.env.<MEDUSA_E
 - `.env`: lo consume el contenedor de Docker (`DATABASE_URL=postgres://medusa:medusa@db:5432/medusa`, `REDIS_URL=redis://redis:6379`).
 - `.env.host`: pensado para ejecutar migraciones/seeds desde tu máquina (`DATABASE_URL=postgres://medusa:medusa@localhost:5432/medusa`, `REDIS_URL=redis://localhost:6379`).
 
+El backend carga el archivo en este orden: primero `ENV_FILE` si está definido, luego `.env.<MEDUSA_ENV>` y por último `.env`. Si no
+encuentra `DATABASE_URL` o `REDIS_URL` después de leer el archivo seleccionado, mostrará un error con la ruta cargada y te pedirá
+ejecutar con `MEDUSA_ENV=host` (para usar `.env.host`) o definir `ENV_FILE` apuntando al archivo correcto.
+
 Al ejecutar procesos del backend desde el host (`dev`, `start`, `migrate`, `seed`), define `MEDUSA_ENV=host` (las scripts ya lo fijan por defecto) y usa `.env.host` o un archivo equivalente (`ENV_FILE=./.env.host.local`). Los contenedores de Docker siguen usando el `.env` generado para su propia red interna.
 
 | Variable | Descripción | Ejemplo |
