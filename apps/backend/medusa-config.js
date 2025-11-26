@@ -26,15 +26,15 @@ const plugins = ["@medusajs/medusa"];
 
 if (STRIPE_SECRET_KEY) {
   const stripeOptions = {
-    api_key: STRIPE_SECRET_KEY,
+    apiKey: STRIPE_SECRET_KEY,
   };
 
   if (STRIPE_WEBHOOK_SECRET) {
-    stripeOptions.webhook_secret = STRIPE_WEBHOOK_SECRET;
+    stripeOptions.webhookSecret = STRIPE_WEBHOOK_SECRET;
   }
 
   plugins.push({
-    resolve: "medusa-payment-stripe",
+    resolve: "@medusajs/payment-stripe",
     options: stripeOptions,
   });
 } else {

@@ -16,11 +16,11 @@
   },
   "dependencies": {
     "@medusajs/medusa": "2.11.3",
-    "@medusajs/medusa-cli": "2.0.0-rc-20241016093905",
+    "@medusajs/cli": "2.11.3",
     "@medusajs/framework": "2.11.3",
     "@medusajs/utils": "2.11.3",
     "@medusajs/types": "2.11.3",
-    "medusa-payment-stripe": "6.0.11",
+    "@medusajs/payment-stripe": "2.11.3",
     "dotenv": "^16.4.5",
     "pg": "^8.11.5",
     "redis": "^4.6.14",
