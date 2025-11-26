@@ -1,6 +1,6 @@
 const configuredBaseUrl = import.meta.env.PUBLIC_BACKEND_URL?.trim();
 
-const BASE_URL = (() => {
+const getBaseUrl = () => {
   if (configuredBaseUrl && configuredBaseUrl.length > 0) {
     return configuredBaseUrl;
   }
@@ -9,15 +9,30 @@ const BASE_URL = (() => {
     return 'http://localhost:9000';
   }
 
-  throw new Error('PUBLIC_BACKEND_URL is required to perform API requests.');
-})();
+  return null;
+};
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${BASE_URL}${path}`, {
-    headers: { 'Content-Type': 'application/json', ...(init?.headers || {}) },
-    credentials: 'include',
-    ...init
-  });
+  const baseUrl = getBaseUrl();
+
+  if (!baseUrl) {
+    throw new Error(
+      'No se pudo determinar la URL del backend. Configura PUBLIC_BACKEND_URL o inicia el backend local en http://localhost:9000.'
+    );
+  }
+
+  let res: Response;
+  try {
+    res = await fetch(`${baseUrl}${path}`, {
+      headers: { 'Content-Type': 'application/json', ...(init?.headers || {}) },
+      credentials: 'include',
+      ...init
+    });
+  } catch (error) {
+    throw new Error(
+      'No se pudo contactar al backend de Medusa. Verifica PUBLIC_BACKEND_URL y que el servidor esté en ejecución.'
+    );
+  }
 
   if (!res.ok) {
     const message = await res.text();
