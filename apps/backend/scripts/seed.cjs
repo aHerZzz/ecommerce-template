@@ -38,6 +38,7 @@ const seed = async function seed({ container, args }) {
   const regionService = maybeResolve(container, Modules.REGION);
   const productService = maybeResolve(container, Modules.PRODUCT);
   const promotionService = maybeResolve(container, Modules.PROMOTION);
+  const fulfillmentService = maybeResolve(container, Modules.FULFILLMENT);
 
   if (regionService && payload.regions?.length) {
     await regionService.upsertRegions(
@@ -51,6 +52,115 @@ const seed = async function seed({ container, args }) {
     logger.info(`Upserted ${payload.regions.length} region(s).`);
   } else if (!regionService) {
     logger.warn("Region module is not registered; skipping region creation.");
+  }
+
+  const regions = regionService ? await regionService.listRegions() : [];
+
+  if (fulfillmentService && payload.shipping_options?.length) {
+    const shippingProfile = await fulfillmentService.upsertShippingProfiles({
+      name: "Default Shipping Profile",
+      type: "default",
+    });
+
+    const providers = await fulfillmentService.listFulfillmentProviders();
+    const providerIds = new Set(providers.map((provider) => provider.id));
+    const serviceZonesByRegion = new Map();
+
+    for (const regionName of new Set(payload.shipping_options.map((s) => s.region_name))) {
+      const region = regions.find((r) => r.name === regionName);
+      if (!region) {
+        logger.warn(`Region '${regionName}' not found; skipping related shipping options.`);
+        continue;
+      }
+
+      const [existingSet] = await fulfillmentService.listFulfillmentSets(
+        { name: `${region.name} Shipping` },
+        { relations: ["service_zones"] }
+      );
+
+      const geoZones = (region.countries || []).map(({ iso_2 }) => ({
+        type: "country",
+        country_code: iso_2,
+      }));
+
+      const fulfillmentSet =
+        existingSet ??
+        (await fulfillmentService.createFulfillmentSets({
+          name: `${region.name} Shipping`,
+          type: "default",
+          service_zones: [
+            {
+              name: `${region.name} Service Zone`,
+              geo_zones: geoZones,
+            },
+          ],
+        }));
+
+      const currentServiceZone = fulfillmentSet.service_zones?.[0];
+
+      const serviceZone = currentServiceZone
+        ? await fulfillmentService.updateServiceZones(currentServiceZone.id, {
+            name: `${region.name} Service Zone`,
+            geo_zones: geoZones,
+          })
+        : await fulfillmentService.createServiceZones({
+            name: `${region.name} Service Zone`,
+            fulfillment_set_id: fulfillmentSet.id,
+            geo_zones: geoZones,
+          });
+
+      serviceZonesByRegion.set(region.name, serviceZone.id);
+    }
+
+    const shippingOptions = payload.shipping_options
+      .map((option) => {
+        const service_zone_id = serviceZonesByRegion.get(option.region_name);
+
+        if (!service_zone_id) {
+          return null;
+        }
+
+        if (!providerIds.has(option.provider_id)) {
+          logger.warn(
+            `Provider '${option.provider_id}' not found; skipping shipping option '${option.name}'.`
+          );
+          return null;
+        }
+
+        const code = option.name
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "");
+
+        return {
+          name: option.name,
+          price_type: option.price_type ?? "flat",
+          service_zone_id,
+          shipping_profile_id: shippingProfile.id,
+          provider_id: option.provider_id,
+          type: {
+            label: option.name,
+            description: option.name,
+            code,
+          },
+          data: {
+            amount: option.amount,
+            admin_only: option.admin_only ?? false,
+            requirements: option.requirements ?? [],
+            ...(option.data || {}),
+          },
+        };
+      })
+      .filter(Boolean);
+
+    if (shippingOptions.length) {
+      await fulfillmentService.upsertShippingOptions(shippingOptions);
+      logger.info(`Upserted ${shippingOptions.length} shipping option(s).`);
+    } else {
+      logger.info("No shipping options to upsert after validation.");
+    }
+  } else if (!fulfillmentService && payload.shipping_options?.length) {
+    logger.warn("Fulfillment module is not registered; skipping shipping options.");
   }
 
   if (productService && payload.product_categories?.length) {
