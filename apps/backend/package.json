@@ -8,7 +8,7 @@
     "start": "cross-env MEDUSA_CONFIG_FILE=./medusa-config.js NODE_OPTIONS=\"--loader ts-node/esm --experimental-specifier-resolution=node\" medusa start",
     "build": "tsc -p tsconfig.json",
     "migrate": "cross-env MEDUSA_CONFIG_FILE=./medusa-config.js NODE_OPTIONS=\"--loader ts-node/esm --experimental-specifier-resolution=node\" medusa db:migrate",
-    "seed": "cross-env MEDUSA_CONFIG_FILE=./medusa-config.js NODE_OPTIONS=\"--loader ts-node/esm --experimental-specifier-resolution=node\" medusa exec ./scripts/seed.ts ./data/seed.json",
+    "seed": "cross-env MEDUSA_CONFIG_FILE=./medusa-config.js medusa exec ./scripts/seed.cjs ./data/seed.json",
     "seed:admin": "cross-env MEDUSA_CONFIG_FILE=./medusa-config.js NODE_OPTIONS=\"--loader ts-node/esm --experimental-specifier-resolution=node\" medusa user -e admin@example.com -p supersecret",
     "services": "docker compose -f ../../infrastructure/docker-compose.yml up -d db redis backend",
     "seed:services": "docker compose -f ../../infrastructure/docker-compose.yml exec backend npm run seed",
