@@ -1,7 +1,19 @@
-import type { Request, Response } from "express";
+import type { Request, Response, Router as RouterType } from "express";
 import { Router } from "express";
 
-export default async function mockWebhook() {
+type PluginRouterConfig = {
+  type: "store" | "admin";
+  route: string;
+  router: RouterType;
+};
+
+type PluginDefinition = {
+  resolve: string;
+  routers: PluginRouterConfig[];
+  services: unknown[];
+};
+
+export default async function mockWebhook(): Promise<PluginDefinition> {
   const router = Router();
 
   router.post("/hooks/test", (req: Request, res: Response) => {

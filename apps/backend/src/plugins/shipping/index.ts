@@ -1,5 +1,17 @@
-import type { Request, Response } from "express";
+import type { Request, Response, Router as RouterType } from "express";
 import { Router } from "express";
+
+type PluginRouterConfig = {
+  type: "store" | "admin";
+  route: string;
+  router: RouterType;
+};
+
+type PluginDefinition = {
+  resolve: string;
+  routers: PluginRouterConfig[];
+  services: unknown[];
+};
 
 const SHIPPING_METHODS = [
   {
@@ -20,7 +32,7 @@ const SHIPPING_METHODS = [
   },
 ];
 
-export default async function shippingPlugin() {
+export default async function shippingPlugin(): Promise<PluginDefinition> {
   const router = Router();
 
   router.get("/store/shipping-options", (_req: Request, res: Response) => {
