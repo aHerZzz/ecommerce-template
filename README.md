@@ -17,7 +17,10 @@ Plantilla de monorepo para tiendas basadas en Medusa con storefront Astro. Inclu
 
 ## Variables de entorno
 
-Las variables se leen desde archivos `.env` en `apps/backend` (o `.env.<MEDUSA_ENV>`). Para desarrollo se pueden exportar en el shell o añadir a un `.env` en esa carpeta.
+Las variables se leen desde archivos `.env` en `apps/backend` (o `.env.<MEDUSA_ENV>`). Para desarrollo se pueden exportar en el shell o añadir a un `.env` en esa carpeta. Usa archivos diferentes según dónde corras los comandos:
+
+- `.env`: lo consume el contenedor de Docker (`DATABASE_URL=postgres://medusa:medusa@db:5432/medusa`, `REDIS_URL=redis://redis:6379`).
+- `.env.host`: pensado para ejecutar migraciones/seeds desde tu máquina (`DATABASE_URL=postgres://medusa:medusa@localhost:5432/medusa`, `REDIS_URL=redis://localhost:6379`).
 
 | Variable | Descripción | Ejemplo |
 | --- | --- | --- |
@@ -41,7 +44,8 @@ Las variables se leen desde archivos `.env` en `apps/backend` (o `.env.<MEDUSA_E
 Ejemplos de `.env` locales:
 
 ```bash
-# apps/backend/.env
+# apps/backend/.env.host (para ejecutar desde el host)
+PORT=9000
 DATABASE_URL=postgres://medusa:medusa@localhost:5432/medusa
 REDIS_URL=redis://localhost:6379
 STORE_CORS=http://localhost:4321
@@ -65,14 +69,15 @@ PUBLIC_STRIPE_PUBLIC_KEY=pk_test_xxx
    - PostgreSQL: `localhost:5432`
    - Redis: `localhost:6379`
 
-2. Ejecuta las migraciones desde tu máquina:
+2. Ejecuta las migraciones desde tu máquina con las variables del host:
    ```bash
-   pnpm --dir apps/backend run migrate
+   cp apps/backend/.env.host apps/backend/.env.host.local  # opcional, para personalizar
+   MEDUSA_ENV=host pnpm --dir apps/backend run migrate
    ```
 
-3. Semilla los datos (host):
+3. Semilla los datos (host) usando el mismo archivo de entorno:
    ```bash
-   pnpm --dir apps/backend run seed
+   MEDUSA_ENV=host pnpm --dir apps/backend run seed
    ```
    - Usa un archivo alternativo: `pnpm --dir apps/backend run seed --file=./data/otra-semilla.json`
 
