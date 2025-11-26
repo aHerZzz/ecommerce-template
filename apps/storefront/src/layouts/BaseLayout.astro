@@ -6,9 +6,6 @@ import { storeSettings } from '../config/store';
 import { themeSettings } from '../config/theme';
 import CookieBanner from '../components/ui/CookieBanner';
 
-const prefersDark = themeSettings.darkMode?.default === 'dark';
-const prefersSystem = themeSettings.darkMode?.default === 'system';
-
 const rootStyle = Object.entries({
   '--color-primary-light': themeSettings.palette.primary,
   '--color-accent-light': themeSettings.palette.accent,
@@ -27,8 +24,8 @@ const rootStyle = Object.entries({
   .join(' ');
 
 const themeScript = `(() => {
-  const prefersSystem = ${JSON.stringify(prefersSystem)};
-  const prefersDark = ${JSON.stringify(prefersDark)};
+  const prefersSystem = ${JSON.stringify(themeSettings.darkMode?.default === 'system')};
+  const prefersDark = ${JSON.stringify(themeSettings.darkMode?.default === 'dark')};
   const stored = localStorage.getItem('theme');
   const prefers = window.matchMedia('(prefers-color-scheme: dark)').matches;
   const theme = stored || (prefersSystem ? (prefers ? 'dark' : 'light') : prefersDark ? 'dark' : 'light');
@@ -48,9 +45,7 @@ const { title = storeSettings.branding.storeName, description = storeSettings.br
     <meta name="description" content={description} />
     <link rel="icon" type="image/png" href={themeSettings.logos.favicon} />
     {themeSettings.darkMode?.enabled && (
-      <script>
-        {themeScript}
-      </script>
+      <script set:html={themeScript}></script>
     )}
   </head>
   <body class="min-h-screen bg-background text-text dark:bg-background-dark dark:text-text-dark">

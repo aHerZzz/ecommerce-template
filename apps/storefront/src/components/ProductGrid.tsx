@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useCart } from './CartContext';
 import { useWishlist } from '../hooks/useWishlist';
-import type { Product } from '../data/products';
+import { useProducts } from '../hooks/useProducts';
 import { t } from '../i18n/config';
 import { formatPrice, storeSettings } from '../config/store';
 import { Button } from './ui/Button';
@@ -9,22 +9,16 @@ import { Card } from './ui/Card';
 
 const locale = t;
 
-type Props = {
-  products: Product[];
-};
-
-export function ProductGrid({ products }: Props) {
+export function ProductGrid() {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
   const [tag, setTag] = useState('');
-  const { addItem } = useCart();
+  const { addItem, loading: cartLoading } = useCart();
   const { items: wishlist, toggleItem } = useWishlist();
+  const { products, loading, error, refresh } = useProducts();
 
-  const categories = useMemo(() => Array.from(new Set(products.map((p) => p.category))), [products]);
-  const tags = useMemo(
-    () => Array.from(new Set(products.flatMap((p) => p.tags))),
-    [products]
-  );
+  const categories = useMemo(() => Array.from(new Set(products.map((p) => p.category).filter(Boolean))), [products]);
+  const tags = useMemo(() => Array.from(new Set(products.flatMap((p) => p.tags))), [products]);
 
   const filtered = useMemo(
     () =>
@@ -36,6 +30,110 @@ export function ProductGrid({ products }: Props) {
       }),
     [products, search, category, tag]
   );
+
+  const renderContent = () => {
+    if (loading) {
+      return <p className="text-sm text-slate-500">Cargando catálogo...</p>;
+    }
+
+    if (error) {
+      return (
+        <Card className="bg-amber-50 text-amber-800" ariaLabel="Error cargando productos">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="font-semibold">No se pudieron cargar los productos.</p>
+              <p className="text-sm">{error}</p>
+            </div>
+            <Button size="sm" onClick={refresh}>
+              Reintentar
+            </Button>
+          </div>
+        </Card>
+      );
+    }
+
+    if (filtered.length === 0) {
+      return <p className="text-sm text-slate-500">No hay productos que coincidan con los filtros.</p>;
+    }
+
+    return (
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {filtered.map((product) => {
+          const [firstVariant] = product.variants;
+          const inWishlist = wishlist.some((item) => item.id === product.id);
+          return (
+            <Card key={product.id} as="article" ariaLabel={`Producto ${product.name}`} className="flex flex-col gap-3">
+              <a href={`/product/${product.slug}`} className="block overflow-hidden rounded-lg">
+                {product.image ? (
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="h-48 w-full object-cover transition-transform duration-150 hover:scale-105"
+                  />
+                ) : (
+                  <div className="flex h-48 w-full items-center justify-center bg-slate-100 text-slate-500">Sin imagen</div>
+                )}
+              </a>
+              <div className="flex-1 flex flex-col gap-2">
+                <div className="flex items-center justify-between gap-2">
+                  <h3 className="text-lg font-semibold text-primary dark:text-text-dark">{product.name}</h3>
+                  {product.category && <span className="text-sm text-slate-500 dark:text-slate-300">{product.category}</span>}
+                </div>
+                {product.description && (
+                  <p className="line-clamp-2 text-sm text-slate-600 dark:text-slate-200">{product.description}</p>
+                )}
+                <div className="flex flex-wrap gap-2">
+                  {product.tags.map((tagValue) => (
+                    <span
+                      key={tagValue}
+                      className="rounded-full bg-slate-100 px-2 py-1 text-xs text-slate-700 dark:bg-gray-800 dark:text-slate-200"
+                    >
+                      #{tagValue}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-lg font-bold">{formatPrice(firstVariant?.price ?? product.price)}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-300">
+                    IVA {storeSettings.tax.ivaPercent}% incluido
+                  </p>
+                  {firstVariant && (
+                    <p className="text-xs text-slate-500 dark:text-slate-300">{locale('variants')}: {firstVariant.name}</p>
+                  )}
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    onClick={() =>
+                      firstVariant &&
+                      addItem(firstVariant.id, 1).catch(() => {
+                        /* error surfaced in context */
+                      })
+                    }
+                    disabled={!firstVariant || cartLoading}
+                    aria-label={`Añadir ${product.name} al carrito`}
+                  >
+                    {locale('addToCart')}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={inWishlist ? 'primary' : 'secondary'}
+                    aria-label={locale('addToWishlist')}
+                    aria-pressed={inWishlist}
+                    onClick={() => toggleItem({ id: product.id, name: product.name, image: product.image ?? '' })}
+                  >
+                    ♥
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          );
+        })}
+      </div>
+    );
+  };
 
   return (
     <div className="flex flex-col gap-4">
@@ -86,81 +184,7 @@ export function ProductGrid({ products }: Props) {
         </label>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {filtered.map((product) => {
-          const [firstVariant] = product.variants;
-          const inWishlist = wishlist.some((item) => item.id === product.id);
-          return (
-            <Card key={product.id} as="article" ariaLabel={`Producto ${product.name}`} className="flex flex-col gap-3">
-              <a href={`/product/${product.slug}`} className="block overflow-hidden rounded-lg">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="h-48 w-full object-cover transition-transform duration-150 hover:scale-105"
-                />
-              </a>
-              <div className="flex-1 flex flex-col gap-2">
-                <div className="flex items-center justify-between gap-2">
-                  <h3 className="text-lg font-semibold text-primary dark:text-text-dark">{product.name}</h3>
-                  <span className="text-sm text-slate-500 dark:text-slate-300">{product.category}</span>
-                </div>
-                <p className="line-clamp-2 text-sm text-slate-600 dark:text-slate-200">{product.description}</p>
-                <div className="flex flex-wrap gap-2">
-                  {product.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded-full bg-slate-100 px-2 py-1 text-xs text-slate-700 dark:bg-gray-800 dark:text-slate-200"
-                    >
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-lg font-bold">{formatPrice(product.price)}</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-300">
-                    IVA {storeSettings.tax.ivaPercent}% incluido
-                  </p>
-                  {firstVariant && (
-                    <p className="text-xs text-slate-500 dark:text-slate-300">
-                      {locale('variants')}: {firstVariant.name} ({firstVariant.sku})
-                    </p>
-                  )}
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    onClick={() =>
-                      addItem({
-                        id: product.id,
-                        name: product.name,
-                        price: firstVariant?.price ?? product.price,
-                        variant: firstVariant?.name,
-                        image: product.image
-                      })
-                    }
-                    aria-label={`Añadir ${product.name} al carrito`}
-                  >
-                    {locale('addToCart')}
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant={inWishlist ? 'primary' : 'secondary'}
-                    aria-label={locale('addToWishlist')}
-                    aria-pressed={inWishlist}
-                    onClick={() =>
-                      toggleItem({ id: product.id, name: product.name, image: product.image })
-                    }
-                  >
-                    ♥
-                  </Button>
-                </div>
-              </div>
-            </Card>
-          );
-        })}
-      </div>
+      {renderContent()}
     </div>
   );
 }

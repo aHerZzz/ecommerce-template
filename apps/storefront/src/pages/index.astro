@@ -1,10 +1,16 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import type { Product } from '../types/store';
 import { fetchProducts } from '../services/products';
 import { StorefrontApp } from '../components/StorefrontApp';
 import { storeSettings } from '../config/store';
 
-const productList = await fetchProducts();
+let productList: Product[] = [];
+try {
+  productList = await fetchProducts();
+} catch (error) {
+  console.error('No se pudo cargar el catálogo inicial', error);
+}
 ---
 <BaseLayout title={storeSettings.branding.storeName} description={storeSettings.branding.tagline}>
   <section class="flex flex-col gap-6">
