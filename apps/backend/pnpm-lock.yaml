@@ -8,12 +8,21 @@ importers:
 
   .:
     dependencies:
+      '@medusajs/framework':
+        specifier: 2.11.3
+        version: 2.11.3(@medusajs/cli@2.11.3(@types/node@22.19.1))(@types/node@22.19.1)(ioredis@5.8.2)(vite@5.4.21(@types/node@22.19.1))
       '@medusajs/medusa':
         specifier: 2.11.3
         version: 2.11.3(@medusajs/cli@2.11.3(@types/node@22.19.1))(@medusajs/framework@2.11.3(@medusajs/cli@2.11.3(@types/node@22.19.1))(@types/node@22.19.1)(ioredis@5.8.2)(vite@5.4.21(@types/node@22.19.1)))(@medusajs/icons@2.11.3(react@18.3.1))(@medusajs/ui@4.0.27(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.3))(@types/node@22.19.1)(awilix@8.0.1)(picomatch@4.0.3)(posthog-node@5.14.0)(react-dom@18.3.1(react@18.3.1))(react-router-dom@6.20.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(typescript@5.9.3)
       '@medusajs/medusa-cli':
         specifier: 2.0.0-rc-20241016093905
-        version: 2.0.0-rc-20241016093905(@mikro-orm/core@5.9.7)(@mikro-orm/knex@5.9.7(@mikro-orm/core@5.9.7)(@mikro-orm/migrations@5.9.7)(pg@8.16.3))(@mikro-orm/migrations@5.9.7)(@mikro-orm/postgresql@5.9.7)(@types/node@22.19.1)(awilix@8.0.1)(ioredis@5.8.2)(pg@8.16.3)(vite@5.4.21(@types/node@22.19.1))
+        version: 2.0.0-rc-20241016093905(@mikro-orm/core@5.9.7)(@mikro-orm/knex@6.4.16(@mikro-orm/core@5.9.7)(pg@8.16.3))(@mikro-orm/migrations@5.9.7)(@mikro-orm/postgresql@5.9.7)(@types/node@22.19.1)(awilix@8.0.1)(ioredis@5.8.2)(pg@8.16.3)(vite@5.4.21(@types/node@22.19.1))
+      '@medusajs/types':
+        specifier: 2.11.3
+        version: 2.11.3(ioredis@5.8.2)(vite@5.4.21(@types/node@22.19.1))
+      '@medusajs/utils':
+        specifier: 2.11.3
+        version: 2.11.3(@types/node@22.19.1)(express@4.21.2)
       dotenv:
         specifier: ^16.4.5
         version: 16.6.1
@@ -30,6 +39,9 @@ importers:
         specifier: ^0.1.14
         version: 0.1.14
     devDependencies:
+      '@types/express':
+        specifier: ^4.17.21
+        version: 4.17.25
       '@types/node':
         specifier: ^22.5.1
         version: 22.19.1
@@ -7712,11 +7724,11 @@ snapshots:
     dependencies:
       '@medusajs/framework': 2.11.3(@medusajs/cli@2.11.3(@types/node@22.19.1))(@types/node@22.19.1)(ioredis@5.8.2)(vite@5.4.21(@types/node@22.19.1))
 
-  '@medusajs/medusa-cli@2.0.0-rc-20241016093905(@mikro-orm/core@5.9.7)(@mikro-orm/knex@5.9.7(@mikro-orm/core@5.9.7)(@mikro-orm/migrations@5.9.7)(pg@8.16.3))(@mikro-orm/migrations@5.9.7)(@mikro-orm/postgresql@5.9.7)(@types/node@22.19.1)(awilix@8.0.1)(ioredis@5.8.2)(pg@8.16.3)(vite@5.4.21(@types/node@22.19.1))':
+  '@medusajs/medusa-cli@2.0.0-rc-20241016093905(@mikro-orm/core@5.9.7)(@mikro-orm/knex@6.4.16(@mikro-orm/core@5.9.7)(pg@8.16.3))(@mikro-orm/migrations@5.9.7)(@mikro-orm/postgresql@5.9.7)(@types/node@22.19.1)(awilix@8.0.1)(ioredis@5.8.2)(pg@8.16.3)(vite@5.4.21(@types/node@22.19.1))':
     dependencies:
-      '@medusajs/utils': 2.0.0-rc-20241016093905(@mikro-orm/core@5.9.7)(@mikro-orm/knex@5.9.7(@mikro-orm/core@5.9.7)(@mikro-orm/migrations@5.9.7)(pg@8.16.3))(@mikro-orm/migrations@5.9.7)(@mikro-orm/postgresql@5.9.7)(awilix@8.0.1)(express@4.21.2)(ioredis@5.8.2)(pg@8.16.3)(vite@5.4.21(@types/node@22.19.1))
+      '@medusajs/utils': 2.0.0-rc-20241016093905(@mikro-orm/core@5.9.7)(@mikro-orm/knex@6.4.16(@mikro-orm/core@5.9.7)(pg@8.16.3))(@mikro-orm/migrations@5.9.7)(@mikro-orm/postgresql@5.9.7)(awilix@8.0.1)(express@4.21.2)(ioredis@5.8.2)(pg@8.16.3)(vite@5.4.21(@types/node@22.19.1))
       '@mikro-orm/core': 5.9.7(@mikro-orm/migrations@5.9.7)(@mikro-orm/postgresql@5.9.7)
-      '@mikro-orm/knex': 5.9.7(@mikro-orm/core@5.9.7)(@mikro-orm/migrations@5.9.7)(pg@8.16.3)
+      '@mikro-orm/knex': 6.4.16(@mikro-orm/core@5.9.7)(pg@8.16.3)
       '@mikro-orm/migrations': 5.9.7(@mikro-orm/core@5.9.7)(@types/node@22.19.1)(pg@8.16.3)
       '@mikro-orm/postgresql': 5.9.7(@mikro-orm/core@5.9.7)(@mikro-orm/migrations@5.9.7)
       '@types/express': 4.17.25
@@ -8053,7 +8065,7 @@ snapshots:
       - supports-color
       - tedious
 
-  '@medusajs/utils@2.0.0-rc-20241016093905(@mikro-orm/core@5.9.7)(@mikro-orm/knex@5.9.7(@mikro-orm/core@5.9.7)(@mikro-orm/migrations@5.9.7)(pg@8.16.3))(@mikro-orm/migrations@5.9.7)(@mikro-orm/postgresql@5.9.7)(awilix@8.0.1)(express@4.21.2)(ioredis@5.8.2)(pg@8.16.3)(vite@5.4.21(@types/node@22.19.1))':
+  '@medusajs/utils@2.0.0-rc-20241016093905(@mikro-orm/core@5.9.7)(@mikro-orm/knex@6.4.16(@mikro-orm/core@5.9.7)(pg@8.16.3))(@mikro-orm/migrations@5.9.7)(@mikro-orm/postgresql@5.9.7)(awilix@8.0.1)(express@4.21.2)(ioredis@5.8.2)(pg@8.16.3)(vite@5.4.21(@types/node@22.19.1))':
     dependencies:
       '@graphql-codegen/core': 4.0.2(graphql@16.12.0)
       '@graphql-codegen/typescript': 4.1.6(graphql@16.12.0)
@@ -8061,7 +8073,7 @@ snapshots:
       '@graphql-tools/schema': 10.0.29(graphql@16.12.0)
       '@medusajs/types': 2.0.0-rc-20241016093905(awilix@8.0.1)(ioredis@5.8.2)(vite@5.4.21(@types/node@22.19.1))
       '@mikro-orm/core': 5.9.7(@mikro-orm/migrations@5.9.7)(@mikro-orm/postgresql@5.9.7)
-      '@mikro-orm/knex': 5.9.7(@mikro-orm/core@5.9.7)(@mikro-orm/migrations@5.9.7)(pg@8.16.3)
+      '@mikro-orm/knex': 6.4.16(@mikro-orm/core@5.9.7)(pg@8.16.3)
       '@mikro-orm/migrations': 5.9.7(@mikro-orm/core@5.9.7)(@types/node@22.19.1)(pg@8.16.3)
       '@mikro-orm/postgresql': 5.9.7(@mikro-orm/core@5.9.7)(@mikro-orm/migrations@5.9.7)
       awilix: 8.0.1
@@ -8215,6 +8227,21 @@ snapshots:
       pg: 8.16.3
     transitivePeerDependencies:
       - pg-native
+      - supports-color
+      - tedious
+
+  '@mikro-orm/knex@6.4.16(@mikro-orm/core@5.9.7)(pg@8.16.3)':
+    dependencies:
+      '@mikro-orm/core': 5.9.7(@mikro-orm/migrations@5.9.7)(@mikro-orm/postgresql@5.9.7)
+      fs-extra: 11.3.0
+      knex: 3.1.0(pg@8.16.3)
+      sqlstring: 2.3.3
+    transitivePeerDependencies:
+      - mysql
+      - mysql2
+      - pg
+      - pg-native
+      - sqlite3
       - supports-color
       - tedious
 

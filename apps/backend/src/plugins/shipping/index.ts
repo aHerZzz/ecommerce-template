@@ -1,5 +1,5 @@
+import type { Request, Response } from "express";
 import { Router } from "express";
-import { MedusaRequest, MedusaResponse } from "@medusajs/medusa";
 
 const SHIPPING_METHODS = [
   {
@@ -23,11 +23,11 @@ const SHIPPING_METHODS = [
 export default async function shippingPlugin() {
   const router = Router();
 
-  router.get("/store/shipping-options", (req: MedusaRequest, res: MedusaResponse) => {
+  router.get("/store/shipping-options", (_req: Request, res: Response) => {
     res.json({ shipping_options: SHIPPING_METHODS });
   });
 
-  router.get("/store/shipping-options/:id", (req: MedusaRequest, res: MedusaResponse) => {
+  router.get("/store/shipping-options/:id", (req: Request, res: Response) => {
     const method = SHIPPING_METHODS.find((m) => m.id === req.params.id);
     if (!method) {
       return res.status(404).json({ message: "Shipping method not found" });
