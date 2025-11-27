@@ -22,11 +22,9 @@ Las variables se leen desde archivos `.env` en `apps/backend` (o `.env.<MEDUSA_E
 - `.env`: lo consume el contenedor de Docker (`DATABASE_URL=postgres://medusa:medusa@db:5432/medusa`, `REDIS_URL=redis://redis:6379`).
 - `.env.host`: pensado para ejecutar migraciones/seeds desde tu máquina (`DATABASE_URL=postgres://medusa:medusa@localhost:5432/medusa`, `REDIS_URL=redis://localhost:6379`).
 
-El backend carga el archivo en este orden: primero `ENV_FILE` si está definido, luego `.env.<MEDUSA_ENV>` y por último `.env`. Si no
-encuentra `DATABASE_URL` o `REDIS_URL` después de leer el archivo seleccionado, mostrará un error con la ruta cargada y te pedirá
-ejecutar con `MEDUSA_ENV=host` (para usar `.env.host`) o definir `ENV_FILE` apuntando al archivo correcto.
+El backend resuelve el archivo en este orden: primero `ENV_FILE` si está definido; si corres desde el host, busca `.env.host.local` y luego `.env.host`; después usa `.env.<MEDUSA_ENV>` (si está definido) y por último `.env`. Si no encuentra `DATABASE_URL` o `REDIS_URL` después de leer el archivo seleccionado, mostrará un error con la ruta cargada y te pedirá ejecutar con `MEDUSA_ENV=host` o definir `ENV_FILE` apuntando al archivo correcto.
 
-Al ejecutar procesos del backend desde el host (`dev`, `start`, `migrate`, `seed`), define `MEDUSA_ENV=host` (las scripts ya lo fijan por defecto) y usa `.env.host` o un archivo equivalente (`ENV_FILE=./.env.host.local`). Los contenedores de Docker siguen usando el `.env` generado para su propia red interna.
+Al ejecutar procesos del backend desde el host (`dev`, `start`, `migrate`, `seed`), los scripts ya prueban `.env.host.local`, `.env.host` y finalmente `.env`, de modo que normalmente no necesitas exportar `ENV_FILE` para apuntar a tus servicios locales. Los contenedores de Docker siguen usando el `.env` generado para su propia red interna.
 
 | Variable | Descripción | Ejemplo |
 | --- | --- | --- |
@@ -78,12 +76,12 @@ PUBLIC_STRIPE_PUBLIC_KEY=pk_test_xxx
 2. Ejecuta las migraciones desde tu máquina con las variables del host:
    ```bash
    cp apps/backend/.env.host apps/backend/.env.host.local  # opcional, para personalizar
-   MEDUSA_ENV=host pnpm --dir apps/backend run migrate  # carga apps/backend/.env.host por defecto
+   MEDUSA_ENV=host pnpm --dir apps/backend run migrate  # prueba .env.host.local, .env.host y luego .env
    ```
 
 3. Semilla los datos (host) usando el mismo archivo de entorno:
    ```bash
-   MEDUSA_ENV=host pnpm --dir apps/backend run seed  # o ENV_FILE=./apps/backend/.env.host.local pnpm --dir apps/backend run seed
+   MEDUSA_ENV=host pnpm --dir apps/backend run seed  # usa el mismo orden de resolución de entorno
    ```
    - Usa un archivo alternativo: `pnpm --dir apps/backend run seed --file=./data/otra-semilla.json`
 
@@ -145,7 +143,7 @@ docker compose -f infrastructure/docker-compose.yml up -d db redis backend
 
 1. Levanta la infraestructura (db y redis) con Docker o servicios locales equivalentes.
 2. Define tus variables en `apps/backend/.env.host` o, para overrides locales, en `apps/backend/.env.host.local`.
-   - Fuera de Docker, `medusa-config.(js|ts)` detecta automáticamente primero `.env.host.local` y luego `.env.host`, por lo que no necesitas exportar `ENV_FILE`/`MEDUSA_ENV` para el flujo estándar.
+   - Fuera de Docker, `medusa-config.(js|ts)` detecta automáticamente primero `.env.host.local`, luego `.env.host` y, si no existen, cae en `.env.<MEDUSA_ENV>` o `.env`, por lo que no necesitas exportar `ENV_FILE`/`MEDUSA_ENV` para el flujo estándar.
 3. En una terminal, inicia el backend: `pnpm run dev:backend` (usa por defecto los archivos host detectados).
 4. En otra terminal, inicia el storefront: `pnpm run dev:storefront`.
 5. Corre seeds si necesitas datos de prueba: `pnpm run seed`.
