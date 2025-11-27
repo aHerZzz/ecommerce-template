@@ -2,11 +2,33 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { fetchProduct } from '../../services/products';
 import { ProductDetailApp } from '../../components/ProductDetailApp';
+import type { Product } from '../../types/store';
 
 const { slug } = Astro.params;
-const product = await fetchProduct(slug as string);
+let productLoadError: string | null = null;
+let product: Product | undefined = undefined;
+
+try {
+  product = await fetchProduct(slug as string);
+} catch (error) {
+  productLoadError =
+    (error as Error)?.message ?? 'No se pudo cargar el producto. Intenta de nuevo más tarde.';
+  console.error('No se pudo cargar el producto', error);
+}
+
 export const prerender = false;
 ---
 <BaseLayout title={product?.name ?? 'Producto'} description={product?.description}>
-  <ProductDetailApp client:load slug={slug as string} initialProduct={product} />
+  {productLoadError ? (
+    <div class="rounded-lg border border-amber-200 bg-amber-50 p-4 text-amber-900">
+      <p class="font-semibold">No se pudo cargar el producto solicitado.</p>
+      <p class="text-sm mt-1">{productLoadError}</p>
+      <ul class="mt-3 list-disc space-y-1 pl-5 text-sm">
+        <li>Verifica que la variable <code>PUBLIC_BACKEND_URL</code> esté configurada.</li>
+        <li>Si usas el backend local de Medusa, inicia el servidor en <code>http://localhost:9000</code>.</li>
+      </ul>
+    </div>
+  ) : (
+    <ProductDetailApp client:load slug={slug as string} initialProduct={product ?? undefined} />
+  )}
 </BaseLayout>
