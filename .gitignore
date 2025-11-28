@@ -71,6 +71,7 @@ web_modules/
 !.env.example
 !apps/backend/.env
 !apps/backend/.env.host
+!apps/backend/.env.host.example
 !apps/backend/.env.docker
 
 # parcel-bundler cache (https://parceljs.org/)
