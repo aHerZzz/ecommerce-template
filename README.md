@@ -20,7 +20,7 @@ Plantilla de monorepo para tiendas basadas en Medusa con storefront Astro. Inclu
 Las variables se leen desde archivos `.env` en `apps/backend` (o `.env.<MEDUSA_ENV>`). Para desarrollo se pueden exportar en el shell o añadir a un `.env` en esa carpeta. Usa archivos diferentes según dónde corras los comandos:
 
 - `.env.docker`: viene versionado con las URLs internas de la red Docker (`DATABASE_URL=postgres://medusa:medusa@db:5432/medusa`, `REDIS_URL=redis://redis:6379`). El `docker-compose` del repo lo monta por defecto para que el contenedor del backend encuentre sus servicios.
-- `.env.host`: pensado para ejecutar migraciones/seeds desde tu máquina (`DATABASE_URL=postgres://medusa:medusa@localhost:5432/medusa`, `REDIS_URL=redis://localhost:6379`).
+- `.env.host`: pensado para ejecutar migraciones/seeds desde tu máquina (`DATABASE_URL=postgres://medusa:medusa@localhost:5432/medusa`, `REDIS_URL=redis://localhost:6379`). Crea tu copia local desde el ejemplo con `cp apps/backend/.env.host.example apps/backend/.env.host.local` para evitar el error de "Missing env file" al correr `pnpm run dev:backend`, `pnpm run migrate` o `pnpm run seed` desde el host.
 
 El backend resuelve el archivo en este orden: primero `ENV_FILE` si está definido; si corres desde el host, busca `.env.host.local` y luego `.env.host`; después usa `.env.<MEDUSA_ENV>` (si está definido) y por último `.env`. Si no encuentra `DATABASE_URL` o `REDIS_URL` después de leer el archivo seleccionado, mostrará un error con la ruta cargada y te pedirá ejecutar con `MEDUSA_ENV=host` o definir `ENV_FILE` apuntando al archivo correcto.
 
@@ -48,7 +48,7 @@ Al ejecutar procesos del backend desde el host (`dev`, `start`, `migrate`, `seed
 Ejemplos de `.env` locales:
 
 ```bash
-# apps/backend/.env.host (para ejecutar desde el host)
+# apps/backend/.env.host.example (para ejecutar desde el host)
 PORT=9000
 DATABASE_URL=postgres://medusa:medusa@localhost:5432/medusa
 REDIS_URL=redis://localhost:6379
@@ -56,6 +56,11 @@ STORE_CORS=http://localhost:4321
 ADMIN_CORS=http://localhost:7000
 JWT_SECRET=supersecret
 COOKIE_SECRET=supersecret
+STRIPE_SECRET_KEY=sk_test_xxx
+STRIPE_WEBHOOK_SECRET=whsec_xxx
+RUN_SEED=false
+SEED_FILE=./data/seed.json
+START_COMMAND=dev
 ```
 
 ```bash
@@ -75,7 +80,7 @@ PUBLIC_STRIPE_PUBLIC_KEY=pk_test_xxx
 
 2. Ejecuta las migraciones desde tu máquina con las variables del host:
    ```bash
-   cp apps/backend/.env.host apps/backend/.env.host.local  # opcional, para personalizar
+   cp apps/backend/.env.host.example apps/backend/.env.host.local  # crea tu copia local antes de correr comandos
    MEDUSA_ENV=host pnpm --dir apps/backend run migrate  # prueba .env.host.local, .env.host y luego .env
    ```
 
