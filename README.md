@@ -19,12 +19,12 @@ Plantilla de monorepo para tiendas basadas en Medusa con storefront Astro. Inclu
 
 Las variables se leen desde archivos `.env` en `apps/backend` (o `.env.<MEDUSA_ENV>`). Para desarrollo se pueden exportar en el shell o añadir a un `.env` en esa carpeta. Usa archivos diferentes según dónde corras los comandos:
 
-- `.env`: lo consume el contenedor de Docker (`DATABASE_URL=postgres://medusa:medusa@db:5432/medusa`, `REDIS_URL=redis://redis:6379`).
+- `.env.docker`: viene versionado con las URLs internas de la red Docker (`DATABASE_URL=postgres://medusa:medusa@db:5432/medusa`, `REDIS_URL=redis://redis:6379`). El `docker-compose` del repo lo monta por defecto para que el contenedor del backend encuentre sus servicios.
 - `.env.host`: pensado para ejecutar migraciones/seeds desde tu máquina (`DATABASE_URL=postgres://medusa:medusa@localhost:5432/medusa`, `REDIS_URL=redis://localhost:6379`).
 
 El backend resuelve el archivo en este orden: primero `ENV_FILE` si está definido; si corres desde el host, busca `.env.host.local` y luego `.env.host`; después usa `.env.<MEDUSA_ENV>` (si está definido) y por último `.env`. Si no encuentra `DATABASE_URL` o `REDIS_URL` después de leer el archivo seleccionado, mostrará un error con la ruta cargada y te pedirá ejecutar con `MEDUSA_ENV=host` o definir `ENV_FILE` apuntando al archivo correcto.
 
-Al ejecutar procesos del backend desde el host (`dev`, `start`, `migrate`, `seed`), los scripts ya prueban `.env.host.local`, `.env.host` y finalmente `.env`, de modo que normalmente no necesitas exportar `ENV_FILE` para apuntar a tus servicios locales. Los contenedores de Docker siguen usando el `.env` generado para su propia red interna.
+Al ejecutar procesos del backend desde el host (`dev`, `start`, `migrate`, `seed`), los scripts ya prueban `.env.host.local`, `.env.host` y finalmente `.env`, de modo que normalmente no necesitas exportar `ENV_FILE` para apuntar a tus servicios locales. Los contenedores de Docker cargan `ENV_FILE=./.env.docker` por defecto (o el archivo que definas en `docker-compose`).
 
 | Variable | Descripción | Ejemplo |
 | --- | --- | --- |
@@ -115,6 +115,8 @@ docker compose -f infrastructure/docker-compose.yml up -d db redis backend
    ```
 
 ### Infraestructura local con Docker
+
+> Antes de levantar los servicios, ya tienes `apps/backend/.env.docker` con las URLs internas (`db`/`redis`) que usa el contenedor del backend. Si quieres personalizarlo sin modificar el archivo versionado, crea tu propia copia (`cp apps/backend/.env.docker apps/backend/.env`) y apunta `ENV_FILE` o la clave `env_file` del `docker-compose` a ese archivo.
 
 1. Levanta base de datos, Redis y backend en contenedor:
    ```bash

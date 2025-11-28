@@ -37,8 +37,9 @@ services:
       - ../apps/backend:/app
       - ./backend-entrypoint.sh:/usr/local/bin/backend-entrypoint.sh:ro
     env_file:
-      - ../apps/backend/.env
+      - ../apps/backend/.env.docker
     environment:
+      ENV_FILE: ${ENV_FILE:-./.env.docker}
       PORT: ${PORT:-9000}
       DATABASE_URL: ${DATABASE_URL:-postgres://medusa:medusa@db:5432/medusa}
       REDIS_URL: ${REDIS_URL:-redis://redis:6379}
